@@ -2,8 +2,6 @@
 
 namespace Deployer;
 
-use Deployer\Registry;
-
 /**
  * Zend Framework
  *

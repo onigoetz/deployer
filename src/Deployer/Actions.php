@@ -1,8 +1,6 @@
 <?php
 namespace Deployer;
 
-use Deployer\Registry;
-
 class Actions {
     
     static $replacement_dirs;

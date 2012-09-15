@@ -59,19 +59,6 @@ function ask_password($message){
         return trim($passwd);
 }
 
-
-/*function out($string, $color = null, $background = null){
-   fwrite(STDOUT,CLIColors::getColoredString($string, $color, $background));
-}
-
-function server_out($string){
-    out($string, 'green');
-}
-
-function error_out($string){
-    out($string, 'white', 'red');
-}*/
-
 function prepare_directory($directory, $base){
     if($directory[0] == '/'){
         return $directory;
