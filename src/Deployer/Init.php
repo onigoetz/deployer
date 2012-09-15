@@ -9,6 +9,8 @@ use Symfony\Component\Console\Application;
 class Init {
 
     public static function bootstrap($config) {
+        
+        include dirname(__DIR__).'/functions.php';
 
         if (!defined('VERBOSE')) {
             define('VERBOSE', false);
@@ -28,7 +30,6 @@ class Init {
         $application = new Application();
         $application->add(new DeployCommand);
         $application->run();
-
 
         exit(0);
     }
