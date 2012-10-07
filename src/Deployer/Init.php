@@ -5,6 +5,8 @@ namespace Deployer;
 use Deployer\Command\DeployCommand;
 use Deployer\Registry;
 use Symfony\Component\Console\Application;
+use Symfony\Component\Console\Formatter\OutputFormatterStyle;
+use Symfony\Component\Console\Output\ConsoleOutput;
 
 class Init {
 
@@ -15,6 +17,8 @@ class Init {
         if (!defined('VERBOSE')) {
             define('VERBOSE', false);
         }
+        
+        define("LN", "\n");
 
         define('ERROR_ENVIRONMENT_NOT_AVAILABLE', 1);
         define('ERROR_SERVER_LOGIN_FAILED', 2);
@@ -29,7 +33,17 @@ class Init {
 
         $application = new Application();
         $application->add(new DeployCommand);
-        $application->run();
+        
+        
+        $output = new ConsoleOutput();
+        
+        $style = new OutputFormatterStyle('green');
+        $output->getFormatter()->setStyle('server', $style);
+        
+        $style = new OutputFormatterStyle('blue', null, array('bold'));
+        $output->getFormatter()->setStyle('command', $style);
+
+        $application->run(null, $output);
 
         exit(0);
     }

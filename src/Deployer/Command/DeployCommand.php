@@ -7,6 +7,8 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+
+use Deployer\Registry;
 use Deployer\Extensions\phpseclib\Net\SFTP;
 use Deployer\Actions;
 
@@ -24,11 +26,11 @@ class DeployCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        Registry::set('output', $output);
+        
         $config = Registry::get('config');
         
         $env = $input->getArgument('env');
-        //$input->getOption('yell')
-        //$output->writeln($text);$parser->addOption('verbose', array(
 
         //Prepare configurations
         if(array_key_exists($env ,$config['environments'])){
@@ -39,6 +41,11 @@ class DeployCommand extends Command
                 $config_deploy = $config['deploy'];
             }
             
+            //Prepares the snapshot name
+            $config_deploy['directories']['snapshot'] = strftime($config_deploy['directories']['snapshot_pattern']);
+
+            $output->writeln('This snapshot\'s name will be : ' . $config_deploy['directories']['snapshot']);
+            
             Registry::set('config_deploy', $config_deploy);
 
             $config_servers = $config['environments'][$env]['servers'];
@@ -47,11 +54,6 @@ class DeployCommand extends Command
             $output->writeln('<error>Environnement not available</error>');
             exit(ERROR_ENVIRONMENT_NOT_AVAILABLE);
         }
-
-        //Prepares the snapshot name
-        $config_deploy['directories']['snapshot'] = strftime($config_deploy['directories']['snaphsot_pattern']);
-
-        $output->writeln('This snapshot\'s name will be : ' . $config_deploy['directories']['snapshot']);
 
         //Loop on the servers
         foreach($config_servers as $server){
@@ -83,17 +85,16 @@ class DeployCommand extends Command
         $config_deploy = Registry::get('config_deploy');
         
         $directories = array(
-            'base_dir' => $config['directories']['base_dir'],
-            'snapshots' => prepare_directory($config['directories']['snapshots'], $config['directories']['base_dir']),
-            'deploy' => prepare_directory($config['directories']['deploy'], $config['directories']['base_dir'])
+            'base_dir' => $config_deploy['directories']['base_dir'],
+            'snapshots' => prepare_directory($config_deploy['directories']['snapshots'], $config_deploy['directories']['base_dir']),
+            'deploy' => prepare_directory($config_deploy['directories']['deploy'], $config_deploy['directories']['base_dir'])
         );
 
-        $directories['snapshot'] = $directories['snapshots'] . '/' .$config['directories']['snapshot'];
+        $directories['snapshot'] = $directories['snapshots'] . '/' .$config_deploy['directories']['snapshot'];
 
-        /**
+        /*
         * Do the directories Exists ? 
         */
-
         $output->writeln('Does the snapshots directory exist ?', 'blue');
 
         if(!$ssh->directory_exists($directories['snapshots'])){
@@ -110,7 +111,7 @@ class DeployCommand extends Command
         }
         $output->writeln('<info> OK </info>');
 
-        /**
+        /*
         * SCM Section 
         */
         $class = 'Deployer\\SCM\\'.ucfirst($config_deploy['scm']['type']);
@@ -125,10 +126,13 @@ class DeployCommand extends Command
         if(!array_key_exists('final_url', $config_deploy['scm'])){
             $config_deploy['scm']['final_url'] = $scm->final_url();
         }
+        
+        $command = $scm->clone_command($directories);
+        if(VERBOSE){ $output->writeln('<command>  -> ' . $command . '</command>');}
 
-        $output->writeln('<info>'.$ssh->exec($scm->clone_command($directories)).'</info>');
+        $output->writeln('<info>'.$ssh->exec($command).'</info>');
 
-        /**
+        /*
         * Before Deploy Section 
         */
         $output->writeln('Before deploy actions');
@@ -144,7 +148,7 @@ class DeployCommand extends Command
         $ln = str_replace(LN, '', $ssh->exec('ls -la '.$directories['deploy']));
 
 
-        //Store "previous"
+        //Store "previous" deploy
         $previous = trim(substr($ln, strpos($ln, '->')+3));
 
         if($previous != ''){

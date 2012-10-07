@@ -18,19 +18,21 @@ class Git extends SCM {
     }
     
     function clone_command($directories){
-        $config = Registry::get('config');
+        $config_deploy = Registry::get('config_deploy');
 
         $clone_command = $this->get_command().' clone ';
 
-        if($config['scm']['options']['submodules']){
+        if($config_deploy['scm']['options']['submodules']){
             $clone_command .= ' --recursive';
         }
 
-        $clone_command .= ' -b '.$config['scm']['branch'];
+        $clone_command .= ' -b '.$config_deploy['scm']['branch'];
 
-        $clone_command .= ' "'.$config['scm']['final_url'].'"';
+        $clone_command .= ' "'.$config_deploy['scm']['final_url'].'"';
 
         $clone_command .= ' "'.$directories['snapshot'].'"';
+        
+        return $clone_command;
     }
     
     function final_url(){

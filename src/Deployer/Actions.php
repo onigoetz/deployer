@@ -4,7 +4,20 @@ namespace Deployer;
 class Actions {
     
     static $replacement_dirs;
+    
+    /**
+     * The ssh tunnel
+     * 
+     * @var Deployer\Extensions\phpseclib\Net\SFTP 
+     */
     static $ssh;
+    
+    /**
+     * The output stream
+     * 
+     * @var Symfony\Component\Console\Output\OutputInterface 
+     */
+    static $output;
     
     static function set_directories($directories){
         
@@ -26,10 +39,11 @@ class Actions {
     static function run_actions($actions){
         
         self::$ssh = Registry::get('ssh');
+        self::$output = Registry::get('output');
         
         foreach($actions as $action){
             if(array_key_exists('description', $action)){
-                out($action['description'].LN);
+                self::$output->writeln($action['description']);
                 unset($action['description']);
             }
             
@@ -38,31 +52,61 @@ class Actions {
             
             $parameters = array_map(array(__CLASS__, '_prepare_dir'), $parameters);
             
-            call_user_func_array(array(__CLASS__, $action_name), $parameters);
+            $response = call_user_func_array(array(__CLASS__, $action_name), $parameters);
+            self::$output->writeln('<server>' . $response);
         }
     }
     
     static function action($dir){
         
         $command = 'rm -Rf "'.$dir.'"';
-        if(VERBOSE){out('  -> '.$command.LN);}        
+        if(VERBOSE){self::$output->writeln('<command>  -> ' . $command . '</command>');}
         return self::$ssh->exec($command);
     }
     
     static function symlink($target, $link_name){
-        
         $command = 'ln -s '.$target.' '.$link_name;
-        if(VERBOSE){out('  -> '.$command.LN);}  
+        if(VERBOSE){self::$output->writeln('<command>  -> ' . $command . '</command>');}
         
         return self::$ssh->exec($command);
     }
     
     static function rmfile($file){
-        
         $command = 'rm -f "'.$file.'"';
-        if(VERBOSE){out('  -> '.$command.LN);}   
+        if(VERBOSE){self::$output->writeln('<command>  -> ' . $command . '</command>');}
         
         return self::$ssh->exec($command);
+    }
+    
+    static function rmdir($file){
+        $command = 'rm -rf "'.$file.'"';
+        if(VERBOSE){self::$output->writeln('<command>  -> ' . $command . '</command>');}
+        
+        return self::$ssh->exec($command);
+    }
+    
+    static function composer($dir){
+        
+        $composer_command = str_replace(LN, "", self::$ssh->exec('which composer'));
+        
+        //does composer exist ?
+        if($composer_command != ''){
+            
+            $command = $composer_command . ' install';
+            if(VERBOSE){self::$output->writeln('<command>  -> ' . $command . '</command>');}
+            return self::$ssh->exec($command);
+        } else {
+            
+            $command = 'curl -s https://getcomposer.org/installer | php -- --install-dir="'.$dir.'"';
+            if(VERBOSE){self::$output->writeln('<command>  -> ' . $command . '</command>');}
+            $response = self::$ssh->exec($command);
+            
+            self::$output->write('<server>' . $response);
+            
+            $command = 'cd ' . $dir . ' && ./composer.phar install';
+            if(VERBOSE){self::$output->writeln('<command>  -> ' . $command . '</command>');}
+            return self::$ssh->exec($command);
+        }
     }
     
     //TODO :: finish pruning
