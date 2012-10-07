@@ -49,4 +49,4 @@ include 'vendor/autoload.php';
 \Deployer\Init::bootstrap($config);
 ```
 
-Detailed configuration options can be found on [this page](doc/configuration.md)
+Detailed configuration options can be found on [this page](https://github.com/onigoetz/deployer/wiki/Options)
