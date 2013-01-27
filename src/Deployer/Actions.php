@@ -85,28 +85,35 @@ class Actions {
         return self::$ssh->exec($command);
     }
     
-    static function composer($dir){
+    private static function composer_command($dir) {
         
+        //is composer installed on the system ?
         $composer_command = str_replace("\n", "", self::$ssh->exec('which composer'));
-        
-        //does composer exist ?
         if($composer_command != ''){
-            
-            $command = $composer_command . ' install';
-            if(VERBOSE){self::$output->writeln('<bg=blue;options=bold>  -> ' . $command . '</bg=blue;options=bold>');}
-            return self::$ssh->exec($command);
-        } else {
-            
-            $command = 'curl -s https://getcomposer.org/installer | php -- --install-dir="'.$dir.'"';
-            if(VERBOSE){self::$output->writeln('<bg=blue;options=bold>  -> ' . $command . '</bg=blue;options=bold>');}
-            $response = self::$ssh->exec($command);
-            
-            self::$output->write('<fg=green>' . $response . '</fg=green>');
-            
-            $command = 'cd ' . $dir . ' && ./composer.phar install';
-            if(VERBOSE){self::$output->writeln('<bg=blue;options=bold>  -> ' . $command . '</bg=blue;options=bold>');}
-            return self::$ssh->exec($command);
+            return $composer_command;
         }
+        
+        //is composer installed locally ?
+        if(file_exists($dir. '/composer.phar')){
+            return 'cd ' . $dir . ' && ./composer.phar';
+        }
+        
+        //if not install it locally
+        $command = 'curl -s https://getcomposer.org/installer | php -- --install-dir="'.$dir.'"';
+        if(VERBOSE){self::$output->writeln('<bg=blue;options=bold>  -> ' . $command . '</bg=blue;options=bold>');}
+        $response = self::$ssh->exec($command);
+            
+        self::$output->write('<fg=green>' . $response . '</fg=green>');
+        
+        return 'cd ' . $dir . ' && ./composer.phar';
+    }
+    
+    static function composer($dir){
+        $composer_command = self::composer_command($dir);
+        
+        $command = $composer_command . ' install --prefer-dist --optimize-autoloader' . (VERBOSE? ' -v' : '');
+        if(VERBOSE){self::$output->writeln('<bg=blue;options=bold>  -> ' . $command . '</bg=blue;options=bold>');}
+        return self::$ssh->exec($command);
     }
     
     //TODO :: finish pruning
