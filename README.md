@@ -1,4 +1,5 @@
 # Deployer
+### A Laravel 4 and standalone deployment system
 
 Deployer is a tool that helps to deploy projects of any type to a server with minimal requirements.
 
@@ -17,11 +18,18 @@ I wanted my servers to stay as clean as possible. So I went up with this little 
 
 Deploying is as simple as :
 
-	./deploy deploy production
+	./deploy server:deploy production
 
 Or to be clearer :
 
 	./deploy [command] [environment]
+
+## Commands
+
+Two commands are available
+
+- server:deploy : To deploy the latest commit on one or more servers
+- server:rollback : To rollback the latest deploy on one or more servers
 
 ## Installation
 
@@ -37,8 +45,33 @@ You can install the library through [composer](http://getcomposer.org). All you 
 
 ## Configuration
 
-the configuration is done in the script file itself, 
+There are two ways to configure the deployer, in both cases, the idea is that an array holds the complete configuration,
+it's easier to maintain an use than a lot of different configuration classes.
+
+The syntax is explained [here](https://github.com/onigoetz/deployer/wiki/Options)
+
+### In Laravel 4
+
+Add the following service provider to your application `Deploy\DeployServiceProvider`
+
+Then create a config file named `deploy.php` in `app/config`
 ```php
+<?php
+
+return array(
+    ...
+);
+```
+
+Then you can run `./artisan server:deploy production` to deploy
+
+### Standalone launcher
+
+This time the configuration is done in the executable script.
+
+Create a file named `deploy` (actually you can name it the way you want)
+```php
+#!/usr/bin/env php
 <?php
 
 $config = array(
@@ -46,7 +79,9 @@ $config = array(
 );
 
 include 'vendor/autoload.php';
-\Deployer\Init::bootstrap($config);
+\Deployer\Init::run($config);
 ```
 
-Detailed configuration options can be found on [this page](https://github.com/onigoetz/deployer/wiki/Options)
+Chmod the file to executable
+
+Then you can run `./deploy server:deploy production` to deploy

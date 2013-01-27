@@ -53,58 +53,58 @@ class Actions {
             $parameters = array_map(array(__CLASS__, '_prepare_dir'), $parameters);
             
             $response = call_user_func_array(array(__CLASS__, $action_name), $parameters);
-            self::$output->writeln('<server>' . $response);
+            self::$output->writeln('<fg=green>' . $response . '</fg=green>');
         }
     }
     
     static function action($dir){
         
         $command = 'rm -Rf "'.$dir.'"';
-        if(VERBOSE){self::$output->writeln('<command>  -> ' . $command . '</command>');}
+        if(VERBOSE){self::$output->writeln('<bg=blue;options=bold>  -> ' . $command . '</bg=blue;options=bold>');}
         return self::$ssh->exec($command);
     }
     
     static function symlink($target, $link_name){
         $command = 'ln -s '.$target.' '.$link_name;
-        if(VERBOSE){self::$output->writeln('<command>  -> ' . $command . '</command>');}
+        if(VERBOSE){self::$output->writeln('<bg=blue;options=bold>  -> ' . $command . '</bg=blue;options=bold>');}
         
         return self::$ssh->exec($command);
     }
     
     static function rmfile($file){
         $command = 'rm -f "'.$file.'"';
-        if(VERBOSE){self::$output->writeln('<command>  -> ' . $command . '</command>');}
+        if(VERBOSE){self::$output->writeln('<bg=blue;options=bold>  -> ' . $command . '</bg=blue;options=bold>');}
         
         return self::$ssh->exec($command);
     }
     
     static function rmdir($file){
         $command = 'rm -rf "'.$file.'"';
-        if(VERBOSE){self::$output->writeln('<command>  -> ' . $command . '</command>');}
+        if(VERBOSE){self::$output->writeln('<bg=blue;options=bold>  -> ' . $command . '</bg=blue;options=bold>');}
         
         return self::$ssh->exec($command);
     }
     
     static function composer($dir){
         
-        $composer_command = str_replace(LN, "", self::$ssh->exec('which composer'));
+        $composer_command = str_replace("\n", "", self::$ssh->exec('which composer'));
         
         //does composer exist ?
         if($composer_command != ''){
             
             $command = $composer_command . ' install';
-            if(VERBOSE){self::$output->writeln('<command>  -> ' . $command . '</command>');}
+            if(VERBOSE){self::$output->writeln('<bg=blue;options=bold>  -> ' . $command . '</bg=blue;options=bold>');}
             return self::$ssh->exec($command);
         } else {
             
             $command = 'curl -s https://getcomposer.org/installer | php -- --install-dir="'.$dir.'"';
-            if(VERBOSE){self::$output->writeln('<command>  -> ' . $command . '</command>');}
+            if(VERBOSE){self::$output->writeln('<bg=blue;options=bold>  -> ' . $command . '</bg=blue;options=bold>');}
             $response = self::$ssh->exec($command);
             
-            self::$output->write('<server>' . $response);
+            self::$output->write('<fg=green>' . $response . '</fg=green>');
             
             $command = 'cd ' . $dir . ' && ./composer.phar install';
-            if(VERBOSE){self::$output->writeln('<command>  -> ' . $command . '</command>');}
+            if(VERBOSE){self::$output->writeln('<bg=blue;options=bold>  -> ' . $command . '</bg=blue;options=bold>');}
             return self::$ssh->exec($command);
         }
     }

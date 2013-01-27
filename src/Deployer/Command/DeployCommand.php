@@ -17,7 +17,7 @@ class DeployCommand extends Command
     protected function configure()
     {
         $this
-            ->setName('deploy')
+            ->setName('server:deploy')
             ->setDescription('Deploy the latest release')
             ->addArgument('env', InputArgument::REQUIRED, 'The environment to deploy')
             ->addOption('verbose', 'v')
@@ -26,10 +26,12 @@ class DeployCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        if (!defined('VERBOSE')) {
+            define('VERBOSE', $input->getOption('verbose'));
+        }
+        
         Registry::set('output', $output);
-        
         $config = Registry::get('config');
-        
         $env = $input->getArgument('env');
 
         //Prepare configurations
@@ -63,6 +65,7 @@ class DeployCommand extends Command
             //Ask server password if needed ?
             if(!array_key_exists('password', $server)){
                 $server['password'] = ask_password('Server Password');
+                echo "\n";
             }
 
             //Login to server
@@ -128,7 +131,7 @@ class DeployCommand extends Command
         }
         
         $command = $scm->clone_command($directories);
-        if(VERBOSE){ $output->writeln('<command>  -> ' . $command . '</command>');}
+        if(VERBOSE){ $output->writeln('<bg=blue;options=bold>  -> ' . $command . '</bg=blue;options=bold>');}
 
         $output->writeln('<info>'.$ssh->exec($command).'</info>');
 
@@ -145,7 +148,7 @@ class DeployCommand extends Command
             Actions::run_actions($config_deploy['actions_before']);
         }
 
-        $ln = str_replace(LN, '', $ssh->exec('ls -la '.$directories['deploy']));
+        $ln = str_replace("\n", '', $ssh->exec('ls -la '.$directories['deploy']));
 
 
         //Store "previous" deploy

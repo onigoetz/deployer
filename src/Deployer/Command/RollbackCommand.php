@@ -7,15 +7,17 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Deployer\Extensions\phpseclib\Net\SFTP;
+
 use Deployer\Actions;
+use Deployer\Registry;
+use Deployer\Extensions\phpseclib\Net\SFTP;
 
 class RollbackCommand extends Command 
 {
     protected function configure()
     {
         $this
-            ->setName('rollback')
+            ->setName('server:rollback')
             ->setDescription('Rollback to the release before')
             ->addArgument('env', InputArgument::REQUIRED, 'The environment to rollback')
             ->addOption('verbose', 'v')
@@ -24,11 +26,13 @@ class RollbackCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $config = Registry::get('config');
+        if (!defined('VERBOSE')) {
+            define('VERBOSE', $input->getOption('verbose'));
+        }
         
+        Registry::set('output', $output);
+        $config = Registry::get('config');
         $env = $input->getArgument('env');
-        //$input->getOption('yell')
-        //$output->writeln($text);$parser->addOption('verbose', array(
 
         //Prepare configurations
         if(array_key_exists($env ,$config['environments'])){
@@ -48,19 +52,15 @@ class RollbackCommand extends Command
             exit(ERROR_ENVIRONMENT_NOT_AVAILABLE);
         }
 
-        //Prepares the snapshot name
-        $config_deploy['directories']['snapshot'] = strftime($config_deploy['directories']['snaphsot_pattern']);
-
-        $output->writeln('This snapshot\'s name will be : ' . $config_deploy['directories']['snapshot']);
-
         //Loop on the servers
         foreach($config_servers as $server){
-            $output->writeln('Deploying on server '.$server['host']);
+            $output->writeln('Rollback on server '.$server['host']);
             $output->writeln('-------------------------------------------------');
 
-            //Ask server password if needed ?
+            //Ask server password if needed
             if(!array_key_exists('password', $server)){
                 $server['password'] = ask_password('Server Password');
+                echo "\n";
             }
 
             //Login to server
@@ -91,20 +91,27 @@ class RollbackCommand extends Command
 
         $previous = trim($ssh->exec('cat '.$directories['snapshots'].'/previous'));
         if($previous != ''){
+            $actions = array(
+                array(
+                    'description' => 'Removing the symlink of the release to rollback',
+                    'action' => 'rmfile',
+                    'target' => $directories['deploy']
+                ),
+                array(
+                    'description' => 'Link it again to the snapshot ' . $previous,
+                    'action' => 'symlink',
+                    'target' => $previous,
+                    'link_name' => $directories['deploy']
+                )
+            );
+            
             $output->writeln('Previous snapshot : '.$previous);
-            var_dump($previous);
-
-            $output->writeln('Reverting...'.LN, 'blue');
-            $output->writeln('<info>'.Actions::rmfile($directories['deploy']).'</info>');
-            $output->writeln('<info>'.Actions::symlink($previous,$directories['deploy']).'</info>');
-            $output->writeln('Done'.LN);
+            $output->writeln("Reverting...\n", 'blue');
+            Actions::run_actions($actions);
+            $output->writeln("Done\n");
         } else {
             $output->writeln('<error>Cannot find previous file !!!</error>');
         }
-        
-        $output->writeln('Done');
-        
-        
     }
 }
 

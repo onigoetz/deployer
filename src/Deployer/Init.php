@@ -2,51 +2,44 @@
 
 namespace Deployer;
 
-use Deployer\Command\DeployCommand;
 use Deployer\Registry;
+use Deployer\Command\DeployCommand;
+use Deployer\Command\RollbackCommand;
 use Symfony\Component\Console\Application;
-use Symfony\Component\Console\Formatter\OutputFormatterStyle;
-use Symfony\Component\Console\Output\ConsoleOutput;
 
 class Init {
 
+    public static $init = false;
+    
     public static function bootstrap($config) {
         
-        include dirname(__DIR__).'/functions.php';
-
-        if (!defined('VERBOSE')) {
-            define('VERBOSE', false);
+        if(self::$init){
+            return true;
         }
         
-        define("LN", "\n");
+        include dirname(__DIR__).'/functions.php';
 
         define('ERROR_ENVIRONMENT_NOT_AVAILABLE', 1);
         define('ERROR_SERVER_LOGIN_FAILED', 2);
         define('ERROR_CANNOT_CREATE_DIRECTORY_DEPLOY', 3);
         define('ERROR_CANNOT_CREATE_DIRECTORY_SNAPSHOTS', 4);
 
-        error_reporting(E_ALL);
-
         Registry::set('config', $config);
-
+        
+        self::$init = true;
+    }
+    
+    public static function run($config) {
+        self::bootstrap($config);
+        
         //TODO :: Check configuration
 
         $application = new Application();
         $application->add(new DeployCommand);
+        $application->add(new RollbackCommand);
+        $application->run();
         
-        
-        $output = new ConsoleOutput();
-        
-        $style = new OutputFormatterStyle('green');
-        $output->getFormatter()->setStyle('server', $style);
-        
-        $style = new OutputFormatterStyle('blue', null, array('bold'));
-        $output->getFormatter()->setStyle('command', $style);
-
-        $application->run(null, $output);
-
         exit(0);
     }
-
 }
 

@@ -9,7 +9,7 @@ class Git extends SCM {
     function get_command(){
         $ssh = Registry::get('ssh');
         
-        $git_command = str_replace(LN, "", $ssh->exec('which git'));
+        $git_command = str_replace("\n", "", $ssh->exec('which git'));
         if($git_command == ''){
             //TODO :: ERROR
         }
@@ -17,7 +17,7 @@ class Git extends SCM {
         return $git_command;
     }
     
-    function clone_command($directories){
+    function clone_command(array $directories){
         $config_deploy = Registry::get('config_deploy');
 
         $clone_command = $this->get_command().' clone ';
