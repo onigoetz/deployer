@@ -2,6 +2,7 @@
     "name": "onigoetz/deployer",
     "description": "A configurable deploy script",
     "homepage": "https://github.com/onigoetz/deployer",
+    "keywords": ["deployment", "laravel", "l4"],
     "authors": [
         {
             "name": "Stephane Goetz",
