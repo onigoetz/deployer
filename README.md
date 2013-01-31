@@ -1,5 +1,7 @@
-# Deployer
+# Deployer [![Dependencies](http://dependency.me/repository/image/onigoetz/deployer/master)](http://dependency.me/repository/branche/onigoetz/deployer/master)
 ### A Laravel 4 and standalone deployment system
+
+
 
 Deployer is a tool that helps to deploy projects of any type to a server with minimal requirements.
 
@@ -38,7 +40,7 @@ You can install the library through [composer](http://getcomposer.org). All you 
 ```json
 {
     "require-dev": {
-        "onigoetz/deployer": "dev-master"
+        "onigoetz/deployer": "1.0.0-beta1"
     }
 }
 ```
