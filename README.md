@@ -54,7 +54,7 @@ The syntax is explained [here](https://github.com/onigoetz/deployer/wiki/Options
 
 ### In Laravel 4
 
-Add the following service provider to your application `Deploy\DeployServiceProvider`
+Add the following service provider to your application `Deployer\DeployServiceProvider` in `app/config/app.php`
 
 Then create a config file named `deploy.php` in `app/config`
 ```php
