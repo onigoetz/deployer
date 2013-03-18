@@ -54,7 +54,15 @@ The syntax is explained [here](https://github.com/onigoetz/deployer/wiki/Options
 
 ### In Laravel 4
 
-Add the following service provider to your application `Deployer\DeployServiceProvider` in `app/config/app.php`
+Add the following lines to your application in `app/start/artisan.php`
+
+```php
+
+if (class_exists('Deployer\DeployServiceProvider')) {
+    App::register(new Deployer\DeployServiceProvider(app()));
+}
+
+```
 
 Then create a config file named `deploy.php` in `app/config`
 ```php
