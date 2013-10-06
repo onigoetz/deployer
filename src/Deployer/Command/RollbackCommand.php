@@ -12,15 +12,14 @@ use Deployer\Actions;
 use Deployer\Registry;
 use Deployer\Extensions\phpseclib\Net\SFTP;
 
-class RollbackCommand extends Command 
+class RollbackCommand extends Command
 {
     protected function configure()
     {
         $this
             ->setName('server:rollback')
             ->setDescription('Rollback to the release before')
-            ->addArgument('env', InputArgument::REQUIRED, 'The environment to rollback')
-            ->addOption('verbose', 'v')
+            ->addArgument('from', InputArgument::REQUIRED, 'The environment to rollback')
         ;
     }
 
@@ -29,10 +28,10 @@ class RollbackCommand extends Command
         if (!defined('VERBOSE')) {
             define('VERBOSE', $input->getOption('verbose'));
         }
-        
+
         Registry::set('output', $output);
         $config = Registry::get('config');
-        $env = $input->getArgument('env');
+        $env = $input->getArgument('from');
 
         //Prepare configurations
         if(array_key_exists($env ,$config['environments'])){
@@ -42,7 +41,7 @@ class RollbackCommand extends Command
             } else {
                 $config_deploy = $config['deploy'];
             }
-            
+
             Registry::set('config_deploy', $config_deploy);
 
             $config_servers = $config['environments'][$env]['servers'];
@@ -54,13 +53,14 @@ class RollbackCommand extends Command
 
         //Loop on the servers
         foreach($config_servers as $server){
-            $output->writeln('Rollback on server '.$server['host']);
+            $output->writeln("Rollback on <info>{$server['host']}</info>");
             $output->writeln('-------------------------------------------------');
 
             //Ask server password if needed
             if(!array_key_exists('password', $server)){
-                $server['password'] = ask_password('Server Password');
-                echo "\n";
+                $dialog = $this->getHelperSet()->get('dialog');
+                $text = "Password for <info>{$server['username']}@{$server['host']}</info>:";
+                $server['password'] = $dialog->askHiddenResponse($output, $text, false);
             }
 
             //Login to server
@@ -70,17 +70,17 @@ class RollbackCommand extends Command
                 exit(ERROR_SERVER_LOGIN_FAILED);
             }
             Registry::set('ssh', $ssh);
-            
+
             $this->command_specific($output);
 
             $ssh->disconnect();
         }
     }
-    
+
     function command_specific(OutputInterface $output){
         $ssh = Registry::get('ssh');
         $config_deploy = Registry::get('config_deploy');
-        
+
         $directories = array(
             'base_dir' => $config_deploy['directories']['base_dir'],
             'snapshots' => prepare_directory($config_deploy['directories']['snapshots'], $config_deploy['directories']['base_dir']),
@@ -104,7 +104,7 @@ class RollbackCommand extends Command
                     'link_name' => $directories['deploy']
                 )
             );
-            
+
             $output->writeln('Previous snapshot : '.$previous);
             $output->writeln("Reverting...\n", 'blue');
             Actions::run_actions($actions);

@@ -39,26 +39,6 @@ function array_merge_recursive_distinct(array &$array1, array &$array2) {
     return $merged;
 }
 
-
-function ask_password($message){
-        if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
-            fwrite(STDOUT,$message.' (will echo !):');
-            @flock(STDIN, LOCK_EX);
-            $passwd = fgets(STDIN);
-            @flock(STDIN, LOCK_UN);
-        } else {
-            fwrite(STDOUT, $message .':');
-            // disable echoing
-            system('stty -echo');
-            @flock(STDIN, LOCK_EX);
-            $passwd = fgets(STDIN);
-            @flock(STDIN, LOCK_UN);
-            system('stty echo');
-        }
-        
-        return trim($passwd);
-}
-
 function prepare_directory($directory, $base){
     if($directory[0] == '/'){
         return $directory;

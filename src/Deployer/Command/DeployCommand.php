@@ -12,15 +12,14 @@ use Deployer\Registry;
 use Deployer\Extensions\phpseclib\Net\SFTP;
 use Deployer\Actions;
 
-class DeployCommand extends Command 
+class DeployCommand extends Command
 {
     protected function configure()
     {
         $this
             ->setName('server:deploy')
             ->setDescription('Deploy the latest release')
-            ->addArgument('env', InputArgument::REQUIRED, 'The environment to deploy')
-            ->addOption('verbose', 'v')
+            ->addArgument('to', InputArgument::REQUIRED, 'The environment to deploy')
         ;
     }
 
@@ -29,43 +28,42 @@ class DeployCommand extends Command
         if (!defined('VERBOSE')) {
             define('VERBOSE', $input->getOption('verbose'));
         }
-        
+
         Registry::set('output', $output);
         $config = Registry::get('config');
-        $env = $input->getArgument('env');
+        $env = $input->getArgument('to');
 
         //Prepare configurations
-        if(array_key_exists($env ,$config['environments'])){
-
-            if(array_key_exists('deploy', $config['environments'][$env])){
-                $config_deploy  = array_merge_recursive_distinct($config['deploy'], $config['environments'][$env]['deploy']);
-            } else {
-                $config_deploy = $config['deploy'];
-            }
-            
-            //Prepares the snapshot name
-            $config_deploy['directories']['snapshot'] = strftime($config_deploy['directories']['snapshot_pattern']);
-
-            $output->writeln('This snapshot\'s name will be : ' . $config_deploy['directories']['snapshot']);
-            
-            Registry::set('config_deploy', $config_deploy);
-
-            $config_servers = $config['environments'][$env]['servers'];
-
-        } else {
+        if (!array_key_exists($env ,$config['environments'])) {
             $output->writeln('<error>Environnement not available</error>');
             exit(ERROR_ENVIRONMENT_NOT_AVAILABLE);
         }
 
+        if (array_key_exists('deploy', $config['environments'][$env])) {
+            $config_deploy  = array_merge_recursive_distinct($config['deploy'], $config['environments'][$env]['deploy']);
+        } else {
+            $config_deploy = $config['deploy'];
+        }
+
+        //Prepares the snapshot name
+        $config_deploy['directories']['snapshot'] = strftime($config_deploy['directories']['snapshot_pattern']);
+
+        $output->writeln('This snapshot\'s name will be : ' . $config_deploy['directories']['snapshot']);
+
+        Registry::set('config_deploy', $config_deploy);
+
+        $config_servers = $config['environments'][$env]['servers'];
+
         //Loop on the servers
-        foreach($config_servers as $server){
-            $output->writeln('Deploying on server '.$server['host']);
+        foreach ($config_servers as $server) {
+            $output->writeln("Deploying on <info>{$server['host']}</info>");
             $output->writeln('-------------------------------------------------');
 
             //Ask server password if needed ?
             if(!array_key_exists('password', $server)){
-                $server['password'] = ask_password('Server Password');
-                echo "\n";
+                $dialog = $this->getHelperSet()->get('dialog');
+                $text = "Password for <info>{$server['username']}@{$server['host']}</info>:";
+                $server['password'] = $dialog->askHiddenResponse($output, $text, false);
             }
 
             //Login to server
@@ -75,18 +73,18 @@ class DeployCommand extends Command
                 exit(ERROR_SERVER_LOGIN_FAILED);
             }
             Registry::set('ssh', $ssh);
-            
+
             $this->command_specific($output);
 
             $ssh->disconnect();
         }
     }
-    
+
     function command_specific(OutputInterface $output){
         $ssh = Registry::get('ssh');
         $config = Registry::get('config');
         $config_deploy = Registry::get('config_deploy');
-        
+
         $directories = array(
             'base_dir' => $config_deploy['directories']['base_dir'],
             'snapshots' => prepare_directory($config_deploy['directories']['snapshots'], $config_deploy['directories']['base_dir']),
@@ -96,7 +94,7 @@ class DeployCommand extends Command
         $directories['snapshot'] = $directories['snapshots'] . '/' .$config_deploy['directories']['snapshot'];
 
         /*
-        * Do the directories Exists ? 
+        * Do the directories Exists ?
         */
         $output->writeln('Does the snapshots directory exist ?', 'blue');
 
@@ -115,28 +113,28 @@ class DeployCommand extends Command
         $output->writeln('<info> OK </info>');
 
         /*
-        * SCM Section 
+        * SCM Section
         */
         $class = 'Deployer\\SCM\\'.ucfirst($config_deploy['scm']['type']);
         if(!class_exists($class)){
             $output->writeln('<error> Cannot find SCM: '.$class.' </error>');
         }
-        
+
         $scm = new $class();
-        
-        
+
+
         $output->writeln('<info>Cloning ...</info>');
         if(!array_key_exists('final_url', $config_deploy['scm'])){
             $config_deploy['scm']['final_url'] = $scm->final_url();
         }
-        
+
         $command = $scm->clone_command($directories);
         if(VERBOSE){ $output->writeln('<bg=blue;options=bold>  -> ' . $command . '</bg=blue;options=bold>');}
 
         $output->writeln('<info>'.$ssh->exec($command).'</info>');
 
         /*
-        * Before Deploy Section 
+        * Before Deploy Section
         */
         $output->writeln('Before deploy actions');
         include(dirname(__FILE__).'/../actions.php');
