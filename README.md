@@ -1,4 +1,4 @@
-# Deployer [![Dependencies](http://dependency.me/repository/image/onigoetz/deployer/master)](http://dependency.me/repository/branche/onigoetz/deployer/master)
+# Deployer
 ### A Laravel 4 and standalone deployment system
 
 
