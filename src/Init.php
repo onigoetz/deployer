@@ -1,10 +1,10 @@
 <?php
 
-namespace Deployer;
+namespace Onigoetz\Deployer;
 
-use Deployer\Registry;
-use Deployer\Command\DeployCommand;
-use Deployer\Command\RollbackCommand;
+use Onigoetz\Deployer\Registry;
+use Onigoetz\Deployer\Command\DeployCommand;
+use Onigoetz\Deployer\Command\RollbackCommand;
 use Symfony\Component\Console\Application;
 
 class Init {

@@ -1,8 +1,8 @@
 <?php
 
-namespace Deployer\SCM;
+namespace Onigoetz\Deployer\SCM;
 
-use Deployer\Registry;
+use Onigoetz\Deployer\Registry;
 
 class Git extends SCM {
 

@@ -1,8 +1,10 @@
-<?php namespace Deployer;
+<?php 
+
+namespace Onigoetz\Deployer;
 
 use Illuminate\Support\ServiceProvider;
-use Deployer\Command\DeployCommand;
-use Deployer\Command\RollbackCommand;
+use Onigoetz\Deployer\Command\DeployCommand;
+use Onigoetz\Deployer\Command\RollbackCommand;
 
 class DeployServiceProvider extends ServiceProvider {
 

@@ -1,5 +1,5 @@
 <?php
-namespace Deployer;
+namespace Onigoetz\Deployer;
 
 class Actions {
 

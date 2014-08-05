@@ -54,13 +54,13 @@ The syntax is explained [here](https://github.com/onigoetz/deployer/wiki/Options
 
 ### In Laravel 4
 
-Add the following lines to your application in `app/start/artisan.php`
+Add the following lines to your application in `config/local/app.php`
 
 ```php
 
-if (class_exists('Deployer\DeployServiceProvider')) {
-    App::register(new Deployer\DeployServiceProvider(app()));
-}
+    'providers' => append_config(
+        ['Onigoetz\Deployer\DeployServiceProvider']
+    ),
 
 ```
 

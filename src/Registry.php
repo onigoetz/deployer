@@ -1,6 +1,6 @@
 <?php
 
-namespace Deployer;
+namespace Onigoetz\Deployer;
 
 /**
  * Zend Framework

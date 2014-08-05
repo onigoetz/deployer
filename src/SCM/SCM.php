@@ -1,6 +1,6 @@
 <?php
 
-namespace Deployer\SCM;
+namespace Onigoetz\Deployer\SCM;
 
 abstract class SCM {
     

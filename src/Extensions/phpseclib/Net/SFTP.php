@@ -1,6 +1,6 @@
 <?php
 
-namespace Deployer\Extensions\phpseclib\Net;
+namespace Onigoetz\Deployer\Extensions\phpseclib\Net;
 
 class SFTP extends \Net_SFTP {
 

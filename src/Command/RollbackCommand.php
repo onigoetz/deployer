@@ -1,6 +1,6 @@
 <?php
 
-namespace Deployer\Command;
+namespace Onigoetz\Deployer\Command;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -8,9 +8,9 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-use Deployer\Actions;
-use Deployer\Registry;
-use Deployer\Extensions\phpseclib\Net\SFTP;
+use Onigoetz\Deployer\Actions;
+use Onigoetz\Deployer\Registry;
+use Onigoetz\Deployer\Extensions\phpseclib\Net\SFTP;
 
 class RollbackCommand extends Command
 {
