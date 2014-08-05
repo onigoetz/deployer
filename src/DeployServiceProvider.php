@@ -14,6 +14,16 @@ class DeployServiceProvider extends ServiceProvider {
 	 * @var bool
 	 */
 	protected $defer = true;
+	
+    /**
+     * Bootstrap the application events.
+     *
+     * @return void
+     */
+    public function boot()
+    {
+        $this->package('onigoetz/deployer');
+    }
 
 	/**
 	 * Register the service provider.
