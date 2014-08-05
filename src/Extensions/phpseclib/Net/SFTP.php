@@ -2,23 +2,25 @@
 
 namespace Onigoetz\Deployer\Extensions\phpseclib\Net;
 
-class SFTP extends \Net_SFTP {
+class SFTP extends \Net_SFTP
+{
 
     /**
      * Tests if a directory exists
-     * @param type $directory 
+     *
+     * @param string $dir
+     * @return boolean
      */
-    function directory_exists($dir){
-        
+    public function directory_exists($dir)
+    {
         $pwd = $this->pwd();
-        
-        if(!$this->chdir($dir)){
+
+        if (!$this->chdir($dir)) {
             return false;
         }
-        
+
         $this->chdir($pwd);
-        
+
         return true;
     }
-    
 }

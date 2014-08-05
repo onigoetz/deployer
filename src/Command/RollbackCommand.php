@@ -2,15 +2,13 @@
 
 namespace Onigoetz\Deployer\Command;
 
+use Onigoetz\Deployer\Actions;
+use Onigoetz\Deployer\Extensions\phpseclib\Net\SFTP;
+use Onigoetz\Deployer\Registry;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-
-use Onigoetz\Deployer\Actions;
-use Onigoetz\Deployer\Registry;
-use Onigoetz\Deployer\Extensions\phpseclib\Net\SFTP;
 
 class RollbackCommand extends Command
 {
@@ -19,8 +17,7 @@ class RollbackCommand extends Command
         $this
             ->setName('server:rollback')
             ->setDescription('Rollback to the release before')
-            ->addArgument('from', InputArgument::REQUIRED, 'The environment to rollback')
-        ;
+            ->addArgument('from', InputArgument::REQUIRED, 'The environment to rollback');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -34,10 +31,13 @@ class RollbackCommand extends Command
         $env = $input->getArgument('from');
 
         //Prepare configurations
-        if(array_key_exists($env ,$config['environments'])){
+        if (array_key_exists($env, $config['environments'])) {
 
-            if(array_key_exists('deploy', $config['environments'][$env])){
-                $config_deploy  = array_merge_recursive_distinct($config['deploy'], $config['environments'][$env]['deploy']);
+            if (array_key_exists('deploy', $config['environments'][$env])) {
+                $config_deploy = array_replace_recursive(
+                    $config['deploy'],
+                    $config['environments'][$env]['deploy']
+                );
             } else {
                 $config_deploy = $config['deploy'];
             }
@@ -52,12 +52,12 @@ class RollbackCommand extends Command
         }
 
         //Loop on the servers
-        foreach($config_servers as $server){
+        foreach ($config_servers as $server) {
             $output->writeln("Rollback on <info>{$server['host']}</info>");
             $output->writeln('-------------------------------------------------');
 
             //Ask server password if needed
-            if(!array_key_exists('password', $server)){
+            if (!array_key_exists('password', $server)) {
                 $dialog = $this->getHelperSet()->get('dialog');
                 $text = "Password for <info>{$server['username']}@{$server['host']}</info>:";
                 $server['password'] = $dialog->askHiddenResponse($output, $text, false);
@@ -71,26 +71,33 @@ class RollbackCommand extends Command
             }
             Registry::set('ssh', $ssh);
 
-            $this->command_specific($output);
+            $this->rollback($output);
 
             $ssh->disconnect();
         }
     }
 
-    function command_specific(OutputInterface $output){
+    protected function rollback(OutputInterface $output)
+    {
         $ssh = Registry::get('ssh');
         $config_deploy = Registry::get('config_deploy');
 
         $directories = array(
             'base_dir' => $config_deploy['directories']['base_dir'],
-            'snapshots' => prepare_directory($config_deploy['directories']['snapshots'], $config_deploy['directories']['base_dir']),
-            'deploy' => prepare_directory($config_deploy['directories']['deploy'], $config_deploy['directories']['base_dir'])
+            'snapshots' => prepare_directory(
+                $config_deploy['directories']['snapshots'],
+                $config_deploy['directories']['base_dir']
+            ),
+            'deploy' => prepare_directory(
+                $config_deploy['directories']['deploy'],
+                $config_deploy['directories']['base_dir']
+            )
         );
 
-        Actions::set_directories($directories);
+        Actions::setDirectories($directories);
 
-        $previous = trim($ssh->exec('cat '.$directories['snapshots'].'/previous'));
-        if($previous != ''){
+        $previous = trim($ssh->exec('cat ' . $directories['snapshots'] . '/previous'));
+        if ($previous != '') {
             $actions = array(
                 array(
                     'description' => 'Removing the symlink of the release to rollback',
@@ -105,15 +112,12 @@ class RollbackCommand extends Command
                 )
             );
 
-            $output->writeln('Previous snapshot : '.$previous);
+            $output->writeln('Previous snapshot : ' . $previous);
             $output->writeln("Reverting...\n", 'blue');
-            Actions::run_actions($actions);
+            Actions::runActions($actions);
             $output->writeln("Done\n");
         } else {
             $output->writeln('<error>Cannot find previous file !!!</error>');
         }
     }
 }
-
-
-

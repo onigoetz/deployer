@@ -2,25 +2,25 @@
 
 namespace Onigoetz\Deployer;
 
-/**
- * Zend Framework
- *
- * LICENSE
- *
- * This source file is subject to the new BSD license that is bundled
- * with this package in the file LICENSE.txt.
- * It is also available through the world-wide-web at this URL:
- * http://framework.zend.com/license/new-bsd
- * If you did not receive a copy of the license and are unable to
- * obtain it through the world-wide-web, please send an email
- * to license@zend.com so we can send you a copy immediately.
- *
- * @category   Zend
- * @package    Zend_Registry
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
- * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Registry.php 24593 2012-01-05 20:35:02Z matthew $
- */
+    /**
+     * Zend Framework
+     *
+     * LICENSE
+     *
+     * This source file is subject to the new BSD license that is bundled
+     * with this package in the file LICENSE.txt.
+     * It is also available through the world-wide-web at this URL:
+     * http://framework.zend.com/license/new-bsd
+     * If you did not receive a copy of the license and are unable to
+     * obtain it through the world-wide-web, please send an email
+     * to license@zend.com so we can send you a copy immediately.
+     *
+     * @category   Zend
+     * @package    Zend_Registry
+     * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+     * @license    http://framework.zend.com/license/new-bsd     New BSD License
+     * @version    $Id: Registry.php 24593 2012-01-05 20:35:02Z matthew $
+     */
 
 /**
  * Generic storage class helps to manage global data.
@@ -35,39 +35,39 @@ class Registry extends \ArrayObject
 
     /**
      * Registry object provides storage for shared objects.
-     * @var Zend_Registry
+     * @var Registry
      */
-    private static $_registry = null;
+    private static $registry = null;
 
     /**
      * Retrieves the default registry instance.
      *
-     * @return Zend_Registry
+     * @return Registry
      */
     public static function getInstance()
     {
-        if (self::$_registry === null) {
+        if (self::$registry === null) {
             self::init();
         }
 
-        return self::$_registry;
+        return self::$registry;
     }
 
     /**
      * Set the default registry instance to a specified instance.
      *
-     * @param Zend_Registry $registry An object instance of type Zend_Registry,
+     * @param Registry $registry An object instance of type Zend_Registry,
      *   or a subclass.
      * @return void
-     * @throws Zend_Exception if registry is already initialized.
+     * @throws \Exception if registry is already initialized.
      */
     public static function setInstance(Registry $registry)
     {
-        if (self::$_registry !== null) {
-            throw new Exception('Registry is already initialized');
+        if (self::$registry !== null) {
+            throw new \Exception('Registry is already initialized');
         }
-        
-        self::$_registry = $registry;
+
+        self::$registry = $registry;
     }
 
     /**
@@ -78,18 +78,8 @@ class Registry extends \ArrayObject
     protected static function init()
     {
         $class = __CLASS__;
-        
-        self::setInstance(new $class());
-    }
 
-    /**
-     * Unset the default registry instance.
-     * Primarily used in tearDown() in unit tests.
-     * @returns void
-     */
-    public static function _unsetInstance()
-    {
-        self::$_registry = null;
+        self::setInstance(new $class());
     }
 
     /**
@@ -101,15 +91,14 @@ class Registry extends \ArrayObject
      *
      * @param string $index - get the value associated with $index
      * @return mixed
-     * @throws Zend_Exception if no entry is registerd for $index.
+     * @throws \Exception if no entry is registerd for $index.
      */
     public static function get($index)
     {
         $instance = self::getInstance();
 
         if (!$instance->offsetExists($index)) {
-            require_once 'Zend/Exception.php';
-            throw new Zend_Exception("No entry is registered for key '$index'");
+            throw new \Exception("No entry is registered for key '$index'");
         }
 
         return $instance->offsetGet($index);
@@ -142,10 +131,10 @@ class Registry extends \ArrayObject
      */
     public static function isRegistered($index)
     {
-        if (self::$_registry === null) {
+        if (self::$registry === null) {
             return false;
         }
-        return self::$_registry->offsetExists($index);
+        return self::$registry->offsetExists($index);
     }
 
     /**
@@ -170,5 +159,4 @@ class Registry extends \ArrayObject
     {
         return array_key_exists($index, $this);
     }
-
 }

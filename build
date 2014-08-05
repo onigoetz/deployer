@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+echo "starting PHP Code Sniffer"
+vendor/bin/phpcs --standard=PSR2 src
+
+echo "Starting PHP Unit"
+vendor/bin/phpunit

@@ -14,6 +14,10 @@
         "symfony/console": ">=2.2.0",
         "phpseclib/phpseclib":"0.3.*"
     },
+    "require-dev": {
+        "phpunit/phpunit": ">=4.0.0",
+        "squizlabs/php_codesniffer": ">=1.0.0"
+    },
     "autoload": {
         "psr-4": {
             "Onigoetz\\Deployer\\": "src/"

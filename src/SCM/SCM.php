@@ -2,13 +2,9 @@
 
 namespace Onigoetz\Deployer\SCM;
 
-abstract class SCM {
-    
-    function get_command(){
-        
-    }
-    
-    function clone_command(array $options){
-        
-    }
+abstract class SCM
+{
+    abstract protected function getCommand();
+
+    abstract public function cloneCommand(array $options);
 }

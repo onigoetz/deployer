@@ -15,7 +15,7 @@ return array(
             'dir' => '${snapshot}'
         )
     ),
-	
+
     //What to do after the deploy
     'actions_after' => array(
         array(

@@ -2,15 +2,13 @@
 
 namespace Onigoetz\Deployer\Command;
 
+use Onigoetz\Deployer\Actions;
+use Onigoetz\Deployer\Extensions\phpseclib\Net\SFTP;
+use Onigoetz\Deployer\Registry;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-
-use Onigoetz\Deployer\Registry;
-use Onigoetz\Deployer\Extensions\phpseclib\Net\SFTP;
-use Onigoetz\Deployer\Actions;
 
 class DeployCommand extends Command
 {
@@ -19,8 +17,7 @@ class DeployCommand extends Command
         $this
             ->setName('server:deploy')
             ->setDescription('Deploy the latest release')
-            ->addArgument('to', InputArgument::REQUIRED, 'The environment to deploy')
-        ;
+            ->addArgument('to', InputArgument::REQUIRED, 'The environment to deploy');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -34,13 +31,13 @@ class DeployCommand extends Command
         $env = $input->getArgument('to');
 
         //Prepare configurations
-        if (!array_key_exists($env ,$config['environments'])) {
+        if (!array_key_exists($env, $config['environments'])) {
             $output->writeln('<error>Environnement not available</error>');
             exit(ERROR_ENVIRONMENT_NOT_AVAILABLE);
         }
 
         if (array_key_exists('deploy', $config['environments'][$env])) {
-            $config_deploy  = array_merge_recursive_distinct($config['deploy'], $config['environments'][$env]['deploy']);
+            $config_deploy = array_replace_recursive($config['deploy'], $config['environments'][$env]['deploy']);
         } else {
             $config_deploy = $config['deploy'];
         }
@@ -60,7 +57,7 @@ class DeployCommand extends Command
             $output->writeln('-------------------------------------------------');
 
             //Ask server password if needed ?
-            if(!array_key_exists('password', $server)){
+            if (!array_key_exists('password', $server)) {
                 $dialog = $this->getHelperSet()->get('dialog');
                 $text = "Password for <info>{$server['username']}@{$server['host']}</info>:";
                 $server['password'] = $dialog->askHiddenResponse($output, $text, false);
@@ -74,39 +71,47 @@ class DeployCommand extends Command
             }
             Registry::set('ssh', $ssh);
 
-            $this->command_specific($output);
+            $this->deploy($output);
 
             $ssh->disconnect();
         }
     }
 
-    function command_specific(OutputInterface $output){
+    protected function deploy(OutputInterface $output)
+    {
         $ssh = Registry::get('ssh');
-        $config = Registry::get('config');
         $config_deploy = Registry::get('config_deploy');
 
         $directories = array(
             'base_dir' => $config_deploy['directories']['base_dir'],
-            'snapshots' => prepare_directory($config_deploy['directories']['snapshots'], $config_deploy['directories']['base_dir']),
-            'deploy' => prepare_directory($config_deploy['directories']['deploy'], $config_deploy['directories']['base_dir'])
+            'snapshots' => prepare_directory(
+                $config_deploy['directories']['snapshots'],
+                $config_deploy['directories']['base_dir']
+            ),
+            'deploy' => prepare_directory(
+                $config_deploy['directories']['deploy'],
+                $config_deploy['directories']['base_dir']
+            )
         );
 
-        $directories['snapshot'] = $directories['snapshots'] . '/' .$config_deploy['directories']['snapshot'];
+        $directories['snapshot'] = $directories['snapshots'] . '/' . $config_deploy['directories']['snapshot'];
 
         /*
         * Do the directories Exists ?
         */
         $output->writeln('Does the snapshots directory exist ?', 'blue');
 
-        if(!$ssh->directory_exists($directories['snapshots'])){
+        if (!$ssh->directory_exists($directories['snapshots'])) {
             $output->writeln('<info> CREATING </info>');
 
-            $command = 'mkdir -p "'.$directories['snapshots'].'"';
-            if(VERBOSE) { $output->writeln('  -> '.$command); }
+            $command = 'mkdir -p "' . $directories['snapshots'] . '"';
+            if (VERBOSE) {
+                $output->writeln('  -> ' . $command);
+            }
             $ssh->exec($command);
 
-            if(!$ssh->directory_exists($directories['snapshots'])){
-                $output->writeln('<error>Cannot create directory "'.$directories['snapshots'].'"</error>');
+            if (!$ssh->directory_exists($directories['snapshots'])) {
+                $output->writeln('<error>Cannot create directory "' . $directories['snapshots'] . '"</error>');
                 exit(ERROR_CANNOT_CREATE_DIRECTORY_SNAPSHOTS);
             }
         }
@@ -115,62 +120,61 @@ class DeployCommand extends Command
         /*
         * SCM Section
         */
-        $class = 'Deployer\\SCM\\'.ucfirst($config_deploy['scm']['type']);
-        if(!class_exists($class)){
-            $output->writeln('<error> Cannot find SCM: '.$class.' </error>');
+        $class = 'Deployer\\SCM\\' . ucfirst($config_deploy['scm']['type']);
+        if (!class_exists($class)) {
+            $output->writeln('<error> Cannot find SCM: ' . $class . ' </error>');
         }
 
         $scm = new $class();
 
 
         $output->writeln('<info>Cloning ...</info>');
-        if(!array_key_exists('final_url', $config_deploy['scm'])){
-            $config_deploy['scm']['final_url'] = $scm->final_url();
+        if (!array_key_exists('final_url', $config_deploy['scm'])) {
+            $config_deploy['scm']['final_url'] = $scm->getFinalUrl();
         }
 
-        $command = $scm->clone_command($directories);
-        if(VERBOSE){ $output->writeln('<bg=blue;options=bold>  -> ' . $command . '</bg=blue;options=bold>');}
+        $command = $scm->cloneCommand($directories);
+        if (VERBOSE) {
+            $output->writeln('<bg=blue;options=bold>  -> ' . $command . '</bg=blue;options=bold>');
+        }
 
-        $output->writeln('<info>'.$ssh->exec($command).'</info>');
+        $output->writeln('<info>' . $ssh->exec($command) . '</info>');
 
         /*
         * Before Deploy Section
         */
         $output->writeln('Before deploy actions');
-        include(dirname(__FILE__).'/../actions.php');
+        include(dirname(__FILE__) . '/../actions.php');
 
-        Actions::set_directories($directories);
+        Actions::setDirectories($directories);
 
         //Before deploy
-        if(array_key_exists('actions_before', $config_deploy)){
-            Actions::run_actions($config_deploy['actions_before']);
+        if (array_key_exists('actions_before', $config_deploy)) {
+            Actions::runActions($config_deploy['actions_before']);
         }
 
-        $ln = str_replace("\n", '', $ssh->exec('ls -la '.$directories['deploy']));
+        $ln = str_replace("\n", '', $ssh->exec('ls -la ' . $directories['deploy']));
 
 
         //Store "previous" deploy
-        $previous = trim(substr($ln, strpos($ln, '->')+3));
+        $previous = trim(substr($ln, strpos($ln, '->') + 3));
 
-        if($previous != ''){
-            $output->writeln('Previous snapshot : '.$previous);
-            $ssh->put($directories['snapshots'].'/previous', $previous);
+        if ($previous != '') {
+            $output->writeln('Previous snapshot : ' . $previous);
+            $ssh->put($directories['snapshots'] . '/previous', $previous);
         }
 
         //Symlink the folder
         $output->writeln('Deploy');
-        $output->writeln('<info>'.Actions::rmfile($directories['deploy']).'</info>');
-        $output->writeln('<info>'.Actions::symlink($directories['snapshot'],$directories['deploy']).'</info>');
+        $output->writeln('<info>' . Actions::rmfile($directories['deploy']) . '</info>');
+        $output->writeln('<info>' . Actions::symlink($directories['snapshot'], $directories['deploy']) . '</info>');
 
         //After deploy
         $output->writeln('After deploy actions');
-        if(array_key_exists('actions_after', $config_deploy)){
-            Actions::run_actions($config_deploy['actions_after']);
+        if (array_key_exists('actions_after', $config_deploy)) {
+            Actions::runActions($config_deploy['actions_after']);
         }
 
         $output->writeln('Done');
     }
 }
-
-
-
