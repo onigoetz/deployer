@@ -30,7 +30,7 @@ return array(
     'uploaded' => array(
         'strategy' => 'upload',
 
-        'path' => '.',
+        'path' => dirname(__DIR__),
 
         //paths to include with the build, takes everything by default
         'include' => array(

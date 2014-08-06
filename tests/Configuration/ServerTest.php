@@ -1,13 +1,19 @@
 <?php
+use Onigoetz\Deployer\Configuration\ConfigurationManager;
 use Onigoetz\Deployer\Configuration\Server;
 
 class ServerTest extends PHPUnit_Framework_TestCase
 {
+    protected function getManager()
+    {
+        return new ConfigurationManager();
+    }
+
     public function testGetHost()
     {
         $data = array('host' => 'localhost');
 
-        $server = new Server($data);
+        $server = new Server('local', $data, $this->getManager());
 
         $this->assertEquals($data['host'], $server->getHost());
     }
@@ -17,7 +23,7 @@ class ServerTest extends PHPUnit_Framework_TestCase
      */
     public function testNoHost()
     {
-        $server = new Server(array());
+        $server = new Server('local', array(), $this->getManager());
 
         $server->getHost();
     }
@@ -26,7 +32,7 @@ class ServerTest extends PHPUnit_Framework_TestCase
     {
         $data = array('username' => 'sgoetz');
 
-        $server = new Server($data);
+        $server = new Server('local', $data, $this->getManager());
 
         $this->assertEquals($data['username'], $server->getUsername());
     }
@@ -35,14 +41,14 @@ class ServerTest extends PHPUnit_Framework_TestCase
     {
         $data = array('password' => 'dummyPass');
 
-        $server = new Server($data);
+        $server = new Server('local', $data, $this->getManager());
 
         $this->assertEquals($data['password'], $server->getPassword());
     }
 
     public function testNoPassword()
     {
-        $server = new Server(array());
+        $server = new Server('local', array(), $this->getManager());
 
         $this->assertEquals(Server::$defaultPassword, $server->getPassword());
     }
@@ -51,7 +57,7 @@ class ServerTest extends PHPUnit_Framework_TestCase
     {
         $data = array('host' => 'localhost', 'username' => 'sgoetz');
 
-        $server = new Server($data);
+        $server = new Server('local', $data, $this->getManager());
 
         $this->assertTrue($server->isValid());
     }
@@ -60,7 +66,7 @@ class ServerTest extends PHPUnit_Framework_TestCase
     {
         $data = array('host' => 'localhost', 'password' => 'dummyPass');
 
-        $server = new Server($data);
+        $server = new Server('local', $data, $this->getManager());
 
         $this->assertFalse($server->isValid());
     }

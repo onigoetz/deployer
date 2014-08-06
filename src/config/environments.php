@@ -13,7 +13,7 @@ return array(
         'servers' => array('www1.youmewine.ch'),
         'overrides' => array(
             'source' => array('branch' => 'develop'),
-            'directories' => array('base_dir' => '/home/youmewine/domains/dev.youmewine.com/www/'),
+            'directories' => array('root' => '/home/youmewine/domains/dev.youmewine.com/www/'),
         )
     ),
 );

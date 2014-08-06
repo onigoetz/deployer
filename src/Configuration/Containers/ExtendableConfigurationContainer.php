@@ -8,39 +8,33 @@
 
 namespace Onigoetz\Deployer\Configuration\Containers;
 
-use Onigoetz\Deployer\Configuration\ConfigurationManager;
-
 abstract class ExtendableConfigurationContainer extends InheritingConfigurationContainer
 {
     /**
-     * @var ConfigurationManager
+     * Loads the parent instance specified in the 'extends' key
      */
-    protected $manager;
-
-    public function __construct(array $data, ConfigurationManager $manager)
-    {
-        parent::__construct($data, null);
-
-        $this->manager = $manager;
-    }
-
     protected function loadParent()
     {
-        if (array_key_exists('extends', $this->data)) {
-            $this->parent = $this->manager->get(strtolower(get_class($this)), $this->data['extends']);
+        if (!$this->parent && array_key_exists('extends', $this->data)) {
+            $this->parent = $this->manager->get($this->getContainerType(), $this->data['extends']);
         }
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function getValueOrFail($key, $error_message)
     {
         $this->loadParent();
         return parent::getValueOrFail($key, $error_message);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function getValueOrDefault($key, $default)
     {
         $this->loadParent();
-
         return parent::getValueOrDefault($key, $default);
     }
 }

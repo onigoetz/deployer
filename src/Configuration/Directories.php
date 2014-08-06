@@ -12,7 +12,7 @@ class Directories extends InheritingConfigurationContainer
 
     public function getRoot()
     {
-        return $this->getValueOrFail('root', 'no root server found');
+        return $this->getValueOrFail('root', "no root directory specified");
     }
 
     public function getBinaries()
@@ -30,11 +30,15 @@ class Directories extends InheritingConfigurationContainer
         return $this->getValueOrDefault('deploy', self::$defaultDeploy);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function isValid()
     {
         try {
             $this->getRoot();
         } catch (\LogicException $e) {
+            $this->manager->log($e->getMessage());
             return false;
         }
 

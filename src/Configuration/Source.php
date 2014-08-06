@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by IntelliJ IDEA.
- * User: onigoetz
- * Date: 05.08.14
- * Time: 21:50
- */
 
 namespace Onigoetz\Deployer\Configuration;
 
@@ -14,18 +8,34 @@ use Onigoetz\Deployer\Configuration\Sources\Upload;
 
 class Source extends ExtendableConfigurationContainer
 {
-    public static function make($data, ConfigurationManager $manager)
+    /**
+     * Create a source with the right class
+     *
+     * @param string $name The source name
+     * @param array $data
+     * @param ConfigurationManager $manager
+     * @param Source $parent
+     * @return Cloned|Upload
+     * @throws \LogicException
+     */
+    public static function make($name, array $data, ConfigurationManager $manager, Source $parent = null)
     {
-        if (!array_key_exists('strategy', $data)) {
+        if (!array_key_exists('strategy', $data) && !$parent) {
             throw new \LogicException('no strategy specified for this source');
         }
 
-        switch ($data['strategy']) {
+        if ($parent) {
+            $strategy = $parent->getStrategy();
+        } else {
+            $strategy = $data['strategy'];
+        }
+
+        switch ($strategy) {
             case 'clone':
-                return new Cloned($data, $manager);
+                return new Cloned($name, $data, $manager);
                 break;
             case 'upload':
-                return new Upload($data, $manager);
+                return new Upload($name, $data, $manager);
                 break;
             default:
         }
@@ -33,16 +43,37 @@ class Source extends ExtendableConfigurationContainer
         throw new \LogicException("Unrecognized strategy '{$data['strategy']}'");
     }
 
-    public function getPath()
+    /**
+     * {@inheritdoc}
+     */
+    public function getContainerType()
     {
-        return $this->getValueOrFail('path', 'path not found');
+        return 'source';
     }
 
+    public function getStrategy()
+    {
+        return $this->data['strategy'];
+    }
+
+    /**
+     * @return mixed
+     * @throws \LogicException
+     */
+    public function getPath()
+    {
+        return $this->getValueOrFail('path', "no 'path' specified for source '{$this->name}''");
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function isValid()
     {
         try {
             $this->getPath();
         } catch (\LogicException $e) {
+            $this->manager->log($e->getMessage());
             return false;
         }
 

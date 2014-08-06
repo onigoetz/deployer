@@ -1,15 +1,21 @@
 <?php
 
+use Onigoetz\Deployer\Configuration\ConfigurationManager;
 use Onigoetz\Deployer\Configuration\Directories;
 
 class DirectoriesTest extends PHPUnit_Framework_TestCase
 {
 
+    protected function getManager()
+    {
+        return new ConfigurationManager();
+    }
+
     public function testGetRoot()
     {
         $data = array('root' => '/var/www');
 
-        $directories = new Directories($data);
+        $directories = new Directories('default', $data, $this->getManager());
 
         $this->assertEquals($data['root'], $directories->getRoot());
     }
@@ -17,18 +23,19 @@ class DirectoriesTest extends PHPUnit_Framework_TestCase
     public function testGetInheritedRoot()
     {
         $data = array('root' => '/var/www');
+        $parent = new Directories('default', $data, $this->getManager());
 
-        $directories = new Directories(array(), new Directories($data));
+        $directories = new Directories('override', array(), $this->getManager(), $parent);
 
         $this->assertEquals($data['root'], $directories->getRoot());
     }
 
     public function testGetRootWithInheritance()
     {
-        $data = array('root' => '/var/www');
+        $parent = new Directories('default', array('root' => '/var/www'), $this->getManager());
         $data2 = array('root' => '/var/www2');
 
-        $directories = new Directories($data2, new Directories($data));
+        $directories = new Directories('override', $data2, $this->getManager(), $parent);
 
         $this->assertEquals($data2['root'], $directories->getRoot());
     }
@@ -38,7 +45,8 @@ class DirectoriesTest extends PHPUnit_Framework_TestCase
      */
     public function testNoRoot()
     {
-        $directories = new Directories(array(), new Directories(array()));
+        $parent = new Directories('default', array(), $this->getManager());
+        $directories = new Directories('override', array(), $this->getManager(), $parent);
 
         $directories->getRoot();
     }
@@ -48,14 +56,15 @@ class DirectoriesTest extends PHPUnit_Framework_TestCase
      */
     public function testNoRootWithInheritance()
     {
-        $directories = new Directories(array(), new Directories(array()));
+        $parent = new Directories('default', array(), $this->getManager());
+        $directories = new Directories('override', array(), $this->getManager(), $parent);
 
         $directories->getRoot();
     }
 
     public function testGetDefaultBinaryName()
     {
-        $directories = new Directories(array());
+        $directories = new Directories('default', array(), $this->getManager());
 
         $this->assertEquals(Directories::$defaultBinaryName, $directories->getBinaryName());
     }
@@ -64,14 +73,14 @@ class DirectoriesTest extends PHPUnit_Framework_TestCase
     {
         $data = array('binary_name' => '%A %B %C');
 
-        $directories = new Directories($data);
+        $directories = new Directories('default', $data, $this->getManager());
 
         $this->assertEquals($data['binary_name'], $directories->getBinaryName());
     }
 
     public function testGetDefaultBinaries()
     {
-        $directories = new Directories(array());
+        $directories = new Directories('default', array(), $this->getManager());
 
         $this->assertEquals(Directories::$defaultBinaries, $directories->getBinaries());
     }
@@ -80,14 +89,14 @@ class DirectoriesTest extends PHPUnit_Framework_TestCase
     {
         $data = array('binaries' => 'binar');
 
-        $directories = new Directories($data);
+        $directories = new Directories('default', $data, $this->getManager());
 
         $this->assertEquals($data['binaries'], $directories->getBinaries());
     }
 
     public function testGetDefaultDeploy()
     {
-        $directories = new Directories(array());
+        $directories = new Directories('default', array(), $this->getManager());
 
         $this->assertEquals(Directories::$defaultDeploy, $directories->getDeploy());
     }
@@ -96,7 +105,7 @@ class DirectoriesTest extends PHPUnit_Framework_TestCase
     {
         $data = array('deploy' => 'dep');
 
-        $directories = new Directories($data);
+        $directories = new Directories('default', $data, $this->getManager());
 
         $this->assertEquals($data['deploy'], $directories->getDeploy());
     }
@@ -104,15 +113,17 @@ class DirectoriesTest extends PHPUnit_Framework_TestCase
     public function testGetInheritedDeploy()
     {
         $data = array('deploy' => 'dep');
+        $parent = new Directories('default', $data, $this->getManager());
 
-        $directories = new Directories(array(), new Directories($data));
+        $directories = new Directories('override', array(), $this->getManager(), $parent);
 
         $this->assertEquals($data['deploy'], $directories->getDeploy());
     }
 
     public function testGetDefaultInheritedDeploy()
     {
-        $directories = new Directories(array(), new Directories(array()));
+        $parent = new Directories('default', array(), $this->getManager());
+        $directories = new Directories('override', array(), $this->getManager(), $parent);
 
         $this->assertEquals(Directories::$defaultDeploy, $directories->getDeploy());
     }
@@ -121,16 +132,16 @@ class DirectoriesTest extends PHPUnit_Framework_TestCase
     {
         $data = array('root' => '/var/www');
 
-        $directories = new Directories($data);
+        $directories = new Directories('default', $data, $this->getManager());
 
         $this->assertTrue($directories->isValid());
     }
 
     public function testIsValidWithInheritance()
     {
-        $data = array('root' => '/var/www');
+        $parent = new Directories('default', array('root' => '/var/www'), $this->getManager());
 
-        $directories = new Directories(array(), new Directories($data));
+        $directories = new Directories('override', array(), $this->getManager(), $parent);
 
         $this->assertTrue($directories->isValid());
     }
@@ -139,16 +150,16 @@ class DirectoriesTest extends PHPUnit_Framework_TestCase
     {
         $data = array('deploy' => 'dep');
 
-        $directories = new Directories($data);
+        $directories = new Directories('default', $data, $this->getManager());
 
         $this->assertFalse($directories->isValid());
     }
 
     public function testIsInvalidWithInheritance()
     {
-        $data = array('deploy' => 'dep');
+        $parent = new Directories('default', array('deploy' => 'dep'), $this->getManager());
 
-        $directories = new Directories(array(), new Directories($data));
+        $directories = new Directories('override', array(), $this->getManager(), $parent);
 
         $this->assertFalse($directories->isValid());
     }

@@ -16,7 +16,7 @@ class SourceUploadTest extends PHPUnit_Framework_TestCase
     {
         $data = array('strategy' => 'upload', 'path' => '/the/path', 'include' => array('app'));
 
-        $source = Source::make($data, $this->getManager());
+        $source = Source::make('noname', $data, $this->getManager());
 
         $this->assertEquals($data['include'], $source->getInclude());
     }
@@ -25,7 +25,7 @@ class SourceUploadTest extends PHPUnit_Framework_TestCase
     {
         $data = array('strategy' => 'upload', 'path' => '/the/path');
 
-        $source = Source::make($data, $this->getManager());
+        $source = Source::make('noname', $data, $this->getManager());
 
         $this->assertEquals(Upload::$defaultInclude, $source->getInclude());
     }
@@ -34,7 +34,7 @@ class SourceUploadTest extends PHPUnit_Framework_TestCase
     {
         $data = array('strategy' => 'upload', 'path' => '/the/path', 'exclude' => array('app/storage'));
 
-        $source = Source::make($data, $this->getManager());
+        $source = Source::make('noname', $data, $this->getManager());
 
         $this->assertEquals($data['exclude'], $source->getExclude());
     }
@@ -43,7 +43,7 @@ class SourceUploadTest extends PHPUnit_Framework_TestCase
     {
         $data = array('strategy' => 'upload', 'path' => '/the/path');
 
-        $source = Source::make($data, $this->getManager());
+        $source = Source::make('noname', $data, $this->getManager());
 
         $this->assertEquals(Upload::$defaultExclude, $source->getExclude());
     }

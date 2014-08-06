@@ -15,7 +15,7 @@ class SourceCloneTest extends PHPUnit_Framework_TestCase
     {
         $data = array('strategy' => 'clone', 'path' => '/the/path');
 
-        $source = Source::make($data, $this->getManager());
+        $source = Source::make('noname', $data, $this->getManager());
 
         $this->assertTrue($source->isValid());
     }
@@ -24,7 +24,7 @@ class SourceCloneTest extends PHPUnit_Framework_TestCase
     {
         $data = array('strategy' => 'clone', 'path' => '/the/path', 'branch' => 'develop');
 
-        $source = Source::make($data, $this->getManager());
+        $source = Source::make('noname', $data, $this->getManager());
 
         $this->assertEquals($data['branch'], $source->getBranch());
     }
@@ -34,10 +34,10 @@ class SourceCloneTest extends PHPUnit_Framework_TestCase
         $mgr = $this->getManager();
 
         $master_data = array('strategy' => 'clone', 'path' => '/main/path', 'branch' => 'develop');
-        $mgr->set('master', Source::make($master_data, $mgr));
+        $mgr->set(Source::make('master', $master_data, $mgr));
 
         $data = array('strategy' => 'clone', 'extends' => 'master');
-        $mgr->set('apprentice', $source = Source::make($data, $mgr));;
+        $mgr->set($source = Source::make('apprentice', $data, $mgr));;
 
         $this->assertEquals($master_data['branch'], $source->getBranch());
     }
@@ -46,7 +46,7 @@ class SourceCloneTest extends PHPUnit_Framework_TestCase
     {
         $data = array('strategy' => 'clone', 'path' => '/the/path');
 
-        $source = Source::make($data, $this->getManager());
+        $source = Source::make('noname', $data, $this->getManager());
 
         $this->assertEquals(Cloned::$defaultBranch, $source->getBranch());
     }
@@ -56,10 +56,10 @@ class SourceCloneTest extends PHPUnit_Framework_TestCase
         $mgr = $this->getManager();
 
         $master_data = array('strategy' => 'clone', 'path' => '/main/path');
-        $mgr->set('master', Source::make($master_data, $mgr));
+        $mgr->set(Source::make('master', $master_data, $mgr));
 
         $data = array('strategy' => 'clone', 'extends' => 'master');
-        $mgr->set('apprentice', $source = Source::make($data, $mgr));;
+        $mgr->set($source = Source::make('apprentice', $data, $mgr));;
 
         $this->assertEquals(Cloned::$defaultBranch, $source->getBranch());
     }
@@ -69,7 +69,7 @@ class SourceCloneTest extends PHPUnit_Framework_TestCase
     {
         $data = array('strategy' => 'clone', 'path' => '/the/path', 'type' => 'mercurial');
 
-        $source = Source::make($data, $this->getManager());
+        $source = Source::make('noname', $data, $this->getManager());
 
         $this->assertEquals($data['type'], $source->getType());
     }
@@ -78,7 +78,7 @@ class SourceCloneTest extends PHPUnit_Framework_TestCase
     {
         $data = array('strategy' => 'clone', 'path' => '/the/path');
 
-        $source = Source::make($data, $this->getManager());
+        $source = Source::make('noname', $data, $this->getManager());
 
         $this->assertEquals(Cloned::$defaultType, $source->getType());
     }
@@ -87,7 +87,7 @@ class SourceCloneTest extends PHPUnit_Framework_TestCase
     {
         $data = array('strategy' => 'clone', 'path' => '/the/path', 'submodules' => true);
 
-        $source = Source::make($data, $this->getManager());
+        $source = Source::make('noname', $data, $this->getManager());
 
         $this->assertEquals($data['submodules'], $source->getSubmodules());
     }
@@ -96,7 +96,7 @@ class SourceCloneTest extends PHPUnit_Framework_TestCase
     {
         $data = array('strategy' => 'clone', 'path' => '/the/path');
 
-        $source = Source::make($data, $this->getManager());
+        $source = Source::make('noname', $data, $this->getManager());
 
         $this->assertEquals(Cloned::$defaultSubmodules, $source->getSubmodules());
     }
