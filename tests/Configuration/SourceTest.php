@@ -10,7 +10,6 @@ use Onigoetz\Deployer\Configuration\Source;
  */
 class SourceTest extends PHPUnit_Framework_TestCase
 {
-
     protected function getManager()
     {
         return new ConfigurationManager();
@@ -96,5 +95,16 @@ class SourceTest extends PHPUnit_Framework_TestCase
         $source = Source::make($data, $this->getManager());
 
         $this->assertTrue($source->isValid());
+    }
+
+    /**
+     * @expectedException     \LogicException
+     */
+    public function testNonExistingParent()
+    {
+        $data = array('strategy' => 'upload', 'extends' => 'master', 'path' => '/main/path');
+        $source = Source::make($data, $this->getManager());
+
+        $source->getPath();
     }
 }

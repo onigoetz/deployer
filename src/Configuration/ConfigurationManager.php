@@ -23,11 +23,7 @@ class ConfigurationManager
      */
     public function get($type, $key)
     {
-        if (!array_key_exists($type, $this->configurations)) {
-            throw new \LogicException("no item of type '$type' in the configuration manager");
-        }
-
-        if (!array_key_exists($key, $this->configurations[$type])) {
+        if (!array_key_exists($type, $this->configurations) || !array_key_exists($key, $this->configurations[$type])) {
             throw new \LogicException("no item of type '$type' with key '$key' in the configuration manager");
         }
 

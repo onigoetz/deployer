@@ -3,7 +3,6 @@ use Onigoetz\Deployer\Configuration\Server;
 
 class ServerTest extends PHPUnit_Framework_TestCase
 {
-
     public function testGetHost()
     {
         $data = array('host' => 'localhost');
