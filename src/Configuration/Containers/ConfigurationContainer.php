@@ -6,7 +6,7 @@
  * Time: 20:50
  */
 
-namespace Onigoetz\Deployer\Configuration;
+namespace Onigoetz\Deployer\Configuration\Containers;
 
 
 abstract class ConfigurationContainer

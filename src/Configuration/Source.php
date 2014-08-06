@@ -8,7 +8,7 @@
 
 namespace Onigoetz\Deployer\Configuration;
 
-
+use Onigoetz\Deployer\Configuration\Containers\ExtendableConfigurationContainer;
 use Onigoetz\Deployer\Configuration\Sources\Cloned;
 use Onigoetz\Deployer\Configuration\Sources\Upload;
 
@@ -47,6 +47,5 @@ class Source extends ExtendableConfigurationContainer
         }
 
         return true;
-
     }
 }

@@ -2,6 +2,8 @@
 
 namespace Onigoetz\Deployer\Configuration;
 
+use Onigoetz\Deployer\Configuration\Containers\InheritingConfigurationContainer;
+
 class Directories extends InheritingConfigurationContainer
 {
     public static $defaultBinaries = 'binaries';

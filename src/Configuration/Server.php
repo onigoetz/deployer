@@ -2,6 +2,8 @@
 
 namespace Onigoetz\Deployer\Configuration;
 
+use Onigoetz\Deployer\Configuration\Containers\ConfigurationContainer;
+
 class Server extends ConfigurationContainer
 {
     public static $defaultPassword = null;

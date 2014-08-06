@@ -8,17 +8,15 @@
 
 namespace Onigoetz\Deployer\Configuration;
 
-
 class ConfigurationManager
 {
-
     protected $configurations = array();
 
     /**
      * @param string $type
      * @param string $key
      *
-     * @return ConfigurationContainer
+     * @return Containers\ConfigurationContainer
      * @throws \LogicException
      */
     public function get($type, $key)

@@ -6,7 +6,9 @@
  * Time: 20:50
  */
 
-namespace Onigoetz\Deployer\Configuration;
+namespace Onigoetz\Deployer\Configuration\Containers;
+
+use Onigoetz\Deployer\Configuration\ConfigurationManager;
 
 abstract class ExtendableConfigurationContainer extends InheritingConfigurationContainer
 {
