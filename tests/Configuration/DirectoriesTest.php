@@ -78,54 +78,69 @@ class DirectoriesTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($data['binary_name'], $directories->getBinaryName());
     }
 
+    public function testGetNewBinaryName()
+    {
+        $data = array('root' => '/var/www', 'binaries' => 'bin', 'binary_name' => '%Y');
+
+        $directories = new Directories('default', $data, $this->getManager());
+
+        $expected = $data['root'] . '/' . $data['binaries'] . '/' . strftime('%Y');
+
+        $this->assertEquals($expected, $directories->getNewBinaryName());
+    }
+
     public function testGetDefaultBinaries()
     {
-        $directories = new Directories('default', array(), $this->getManager());
+        $data = array('root' => '/var/www');
+        $directories = new Directories('default', $data, $this->getManager());
 
-        $this->assertEquals(Directories::$defaultBinaries, $directories->getBinaries());
+        $this->assertEquals($data['root'] . '/' . Directories::$defaultBinaries, $directories->getBinaries());
     }
 
     public function testGetBinaries()
     {
-        $data = array('binaries' => 'binar');
+        $data = array('binaries' => 'binar', 'root' => '/var/www');
 
         $directories = new Directories('default', $data, $this->getManager());
 
-        $this->assertEquals($data['binaries'], $directories->getBinaries());
+        $this->assertEquals($data['root'] . '/' . $data['binaries'], $directories->getBinaries());
     }
 
     public function testGetDefaultDeploy()
     {
-        $directories = new Directories('default', array(), $this->getManager());
+        $data = array('root' => '/var/www');
+        $directories = new Directories('default', $data, $this->getManager());
 
-        $this->assertEquals(Directories::$defaultDeploy, $directories->getDeploy());
+        $this->assertEquals($data['root'] . '/' . Directories::$defaultDeploy, $directories->getDeploy());
     }
 
     public function testGetDeploy()
     {
-        $data = array('deploy' => 'dep');
+        $data = array('deploy' => 'dep', 'root' => '/var/www');
 
         $directories = new Directories('default', $data, $this->getManager());
 
-        $this->assertEquals($data['deploy'], $directories->getDeploy());
+        $this->assertEquals($data['root'] . '/' . $data['deploy'], $directories->getDeploy());
     }
 
     public function testGetInheritedDeploy()
     {
-        $data = array('deploy' => 'dep');
+        $data = array('deploy' => 'dep', 'root' => '/var/www');
         $parent = new Directories('default', $data, $this->getManager());
 
         $directories = new Directories('override', array(), $this->getManager(), $parent);
 
-        $this->assertEquals($data['deploy'], $directories->getDeploy());
+        $this->assertEquals($data['root'] . '/' . $data['deploy'], $directories->getDeploy());
     }
 
     public function testGetDefaultInheritedDeploy()
     {
-        $parent = new Directories('default', array(), $this->getManager());
+        $data = array('root' => '/var/www');
+
+        $parent = new Directories('default', $data, $this->getManager());
         $directories = new Directories('override', array(), $this->getManager(), $parent);
 
-        $this->assertEquals(Directories::$defaultDeploy, $directories->getDeploy());
+        $this->assertEquals($data['root'] . '/' . Directories::$defaultDeploy, $directories->getDeploy());
     }
 
     public function testIsValid()

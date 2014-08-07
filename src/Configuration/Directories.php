@@ -17,7 +17,7 @@ class Directories extends InheritingConfigurationContainer
 
     public function getBinaries()
     {
-        return $this->getValueOrDefault('binaries', self::$defaultBinaries);
+        return $this->getRoot() . '/' . $this->getValueOrDefault('binaries', self::$defaultBinaries);
     }
 
     public function getBinaryName()
@@ -27,7 +27,12 @@ class Directories extends InheritingConfigurationContainer
 
     public function getDeploy()
     {
-        return $this->getValueOrDefault('deploy', self::$defaultDeploy);
+        return $this->getRoot() . '/' . $this->getValueOrDefault('deploy', self::$defaultDeploy);
+    }
+
+    public function getNewBinaryName()
+    {
+        return $this->getBinaries() . '/' . strftime($this->getBinaryName());
     }
 
     /**

@@ -16,6 +16,27 @@ class ConfigurationManager
 
     public $logs = array();
 
+    public static function create($data)
+    {
+        $manager = new self();
+
+        $manager->setDefaultDirectories(new Directories('default', $data['directories'], $manager));
+
+        foreach ($data['servers'] as $name => $server) {
+            $manager->set(new Server($name, $server, $manager));
+        }
+
+        foreach ($data['sources'] as $name => $source) {
+            $manager->set(new Source($name, $source, $manager));
+        }
+
+        foreach ($data['environments'] as $name => $environment) {
+            $manager->set(new Environment($name, $environment, $manager));
+        }
+
+        return $manager;
+    }
+
     /**
      * @param string $type
      * @param string $key
