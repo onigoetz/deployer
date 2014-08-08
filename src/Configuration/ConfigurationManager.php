@@ -34,6 +34,10 @@ class ConfigurationManager
             $manager->set(new Environment($name, $environment, $manager));
         }
 
+        foreach ($data['tasks'] as $name => $tasks) {
+            $manager->set(new Tasks($name, $tasks, $manager));
+        }
+
         return $manager;
     }
 

@@ -57,6 +57,27 @@ class Environment extends ConfigurationContainer
         return new Directories('overriden', $this->data['overrides']['directories'], $this->manager, $directories);
     }
 
+    public function getTasks($event)
+    {
+        $tasks = $this->getValueOrDefault('tasks', array());
+
+        if (!array_key_exists($event, $tasks)) {
+            return array();
+        }
+
+        $groups = $tasks[$event];
+        $actions = array();
+
+        foreach ($groups as $group) {
+            $items = $this->manager->get('tasks', $group);
+            foreach ($items->getTasks() as $action) {
+                $actions[] = $action;
+            }
+        }
+
+        return $actions;
+    }
+
     public function isValid()
     {
         try {

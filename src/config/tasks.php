@@ -7,12 +7,12 @@ return array(
             'description' => 'Link the images',
             'action' => 'symlink',
             'target' => 'resources/images',
-            'link_name' => '${snapshot}/public/images'
+            'link_name' => '{{snapshot}}/public/images'
         ),
         array(
             'description' => 'Compose',
             'action' => 'composer',
-            'dir' => '${snapshot}'
+            'dir' => '{{snapshot}}'
         )
     ),
 
