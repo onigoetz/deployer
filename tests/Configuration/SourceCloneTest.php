@@ -100,4 +100,40 @@ class SourceCloneTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals(Cloned::$defaultSubmodules, $source->getSubmodules());
     }
+
+    public function testGetUsername()
+    {
+        $data = array('strategy' => 'clone', 'path' => '/the/path', 'username' => 'root');
+
+        $source = Source::make('noname', $data, $this->getManager());
+
+        $this->assertEquals($data['username'], $source->getUsername());
+    }
+
+    public function testGetDefaultUsername()
+    {
+        $data = array('strategy' => 'clone', 'path' => '/the/path');
+
+        $source = Source::make('noname', $data, $this->getManager());
+
+        $this->assertEquals(null, $source->getUsername());
+    }
+
+    public function testGetPassword()
+    {
+        $data = array('strategy' => 'clone', 'path' => '/the/path', 'password' => 'pass');
+
+        $source = Source::make('noname', $data, $this->getManager());
+
+        $this->assertEquals($data['password'], $source->getPassword());
+    }
+
+    public function testGetDefaultPassword()
+    {
+        $data = array('strategy' => 'clone', 'path' => '/the/path');
+
+        $source = Source::make('noname', $data, $this->getManager());
+
+        $this->assertEquals(null, $source->getPassword());
+    }
 }

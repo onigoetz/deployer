@@ -5,6 +5,7 @@ namespace Onigoetz\Deployer\Configuration;
 use Onigoetz\Deployer\Configuration\Containers\ExtendableConfigurationContainer;
 use Onigoetz\Deployer\Configuration\Sources\Cloned;
 use Onigoetz\Deployer\Configuration\Sources\Upload;
+use Symfony\Component\Console\Output\OutputInterface;
 
 class Source extends ExtendableConfigurationContainer
 {
