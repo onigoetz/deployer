@@ -12,6 +12,9 @@ use Onigoetz\Deployer\Configuration\Containers\ConfigurationContainer;
 
 class Environment extends ConfigurationContainer
 {
+    /**
+     * @param string $key
+     */
     protected function hasOverrides($key)
     {
         if (array_key_exists('overrides', $this->data) && array_key_exists($key, $this->data['overrides'])) {

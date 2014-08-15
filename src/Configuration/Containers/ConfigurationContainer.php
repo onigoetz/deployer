@@ -53,9 +53,9 @@ abstract class ConfigurationContainer
     /**
      * Get the value or throw an exception
      *
-     * @param $key
+     * @param string $key
      * @param $error_message
-     * @return mixed
+     * @return string
      * @throws \LogicException
      */
     protected function getValueOrFail($key, $error_message)
@@ -70,7 +70,7 @@ abstract class ConfigurationContainer
     /**
      * Get the value or return the default
      *
-     * @param $key
+     * @param string $key
      * @param $default
      * @return mixed
      */
