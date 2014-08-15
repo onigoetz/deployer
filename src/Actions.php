@@ -67,6 +67,9 @@ class Actions
         return self::$ssh->exec($command);
     }
 
+    /**
+     * @param string $target
+     */
     public static function symlink($target, $link_name)
     {
         $command = 'ln -s ' . $target . ' ' . $link_name;
