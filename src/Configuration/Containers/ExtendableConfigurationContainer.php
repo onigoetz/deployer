@@ -22,6 +22,7 @@ abstract class ExtendableConfigurationContainer extends InheritingConfigurationC
 
     /**
      * {@inheritdoc}
+     * @param string $key
      */
     protected function getValueOrFail($key, $error_message)
     {
@@ -31,6 +32,7 @@ abstract class ExtendableConfigurationContainer extends InheritingConfigurationC
 
     /**
      * {@inheritdoc}
+     * @param string $key
      */
     protected function getValueOrDefault($key, $default)
     {
