@@ -1,6 +1,12 @@
 # Deployer
 ### A Laravel 4 and standalone deployment system
 
+[![Build Status](http://img.shields.io/travis/onigoetz/deployer.svg?style=flat)](https://travis-ci.org/onigoetz/deployer)
+[![Latest Stable Version](http://img.shields.io/packagist/v/onigoetz/deployer.svg?style=flat)](https://packagist.org/packages/onigoetz/deployer)
+[![Total Downloads](http://img.shields.io/packagist/dt/onigoetz/deployer.svg?style=flat)](https://packagist.org/packages/onigoetz/deployer)
+[![Scrutinizer Quality Score](http://img.shields.io/scrutinizer/g/onigoetz/deployer.svg?style=flat)](https://scrutinizer-ci.com/g/onigoetz/deployer/)
+[![Code Coverage](http://img.shields.io/scrutinizer/coverage/g/onigoetz/deployer.svg?style=flat)](https://scrutinizer-ci.com/g/onigoetz/deployer/)
+
 
 
 Deployer is a tool that helps to deploy projects of any type to a server with minimal requirements.

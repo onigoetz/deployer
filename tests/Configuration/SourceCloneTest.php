@@ -1,14 +1,25 @@
 <?php
 
+use Mockery as m;
 use Onigoetz\Deployer\Configuration\ConfigurationManager;
 use Onigoetz\Deployer\Configuration\Source;
 use Onigoetz\Deployer\Configuration\Sources\Cloned;
 
 class SourceCloneTest extends PHPUnit_Framework_TestCase
 {
+    protected function tearDown()
+    {
+        m::close();
+    }
+
     protected function getManager()
     {
         return new ConfigurationManager();
+    }
+
+    protected function baseConfiguration()
+    {
+        return array('strategy' => 'clone', 'path' => 'https://github.com/onigoetz/deployer');
     }
 
     public function testIsValid()
@@ -135,5 +146,79 @@ class SourceCloneTest extends PHPUnit_Framework_TestCase
         $source = Source::make('noname', $data, $this->getManager());
 
         $this->assertEquals(null, $source->getPassword());
+    }
+
+    public function testGetFinalUrl()
+    {
+        $output = m::mock('Symfony\Component\Console\Output\OutputInterface');
+        $dialog = m::mock('Symfony\Component\Console\Helper\DialogHelper');
+
+        $data = $this->baseConfiguration()  + ['password' => 'pass', 'username' => 'user'];
+
+        $source = Source::make('noname', $data, $this->getManager());
+
+        $this->assertEquals(
+            "https://{$data['username']}:{$data['password']}@github.com/onigoetz/deployer",
+            $source->getFinalUrl($dialog, $output)
+        );
+    }
+
+    public function testGetFinalUrlWithoutPassword()
+    {
+        $password = 'hey';
+
+        $output = m::mock('Symfony\Component\Console\Output\OutputInterface');
+        $dialog = m::mock('Symfony\Component\Console\Helper\DialogHelper');
+        $dialog->shouldReceive('askHiddenResponse')->once()->andReturn($password);
+
+        $data = $this->baseConfiguration()  + ['username' => 'user'];
+
+        $source = Source::make('noname', $data, $this->getManager());
+
+        $this->assertEquals(
+            "https://{$data['username']}:{$password}@github.com/onigoetz/deployer",
+            $source->getFinalUrl($dialog, $output)
+        );
+    }
+
+    public function testGetFinalUrlWithoutUsername()
+    {
+        $username = 'hey';
+
+        $output = m::mock('Symfony\Component\Console\Output\OutputInterface');
+        $dialog = m::mock('Symfony\Component\Console\Helper\DialogHelper');
+        $dialog->shouldReceive('ask')->once()->andReturn($username);
+
+        $data = $this->baseConfiguration()  + ['password' => 'pass'];
+
+        $source = Source::make('noname', $data, $this->getManager());
+
+        $this->assertEquals(
+            "https://{$username}:{$data['password']}@github.com/onigoetz/deployer",
+            $source->getFinalUrl($dialog, $output)
+        );
+    }
+
+    public function testGetFinalUrlWithoutPasswordOnlyAskOnce()
+    {
+        $password = 'hey';
+
+        $output = m::mock('Symfony\Component\Console\Output\OutputInterface');
+        $dialog = m::mock('Symfony\Component\Console\Helper\DialogHelper');
+        $dialog->shouldReceive('askHiddenResponse')->once()->andReturn($password);
+
+        $data = $this->baseConfiguration()  + ['username' => 'user'];
+
+        $source = Source::make('noname', $data, $this->getManager());
+
+        $this->assertEquals(
+            "https://{$data['username']}:{$password}@github.com/onigoetz/deployer",
+            $source->getFinalUrl($dialog, $output)
+        );
+
+        $this->assertEquals(
+            "https://{$data['username']}:{$password}@github.com/onigoetz/deployer",
+            $source->getFinalUrl($dialog, $output)
+        );
     }
 }
