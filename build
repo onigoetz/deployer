@@ -4,4 +4,4 @@ echo "starting PHP Code Sniffer"
 vendor/bin/phpcs --standard=PSR2 src
 
 echo "Starting PHP Unit"
-vendor/bin/phpunit
+vendor/bin/phpunit --coverage-html=coverage

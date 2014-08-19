@@ -19,14 +19,6 @@
     <filter>
         <whitelist>
             <directory suffix=".php">src</directory>
-            <exclude>
-                <directory suffix=".php">src/config</directory>
-            </exclude>
         </whitelist>
     </filter>
-
-    <logging>
-        <log type="coverage-html" target="coverage" title="Deployer" charset="UTF-8" yui="true" highlight="true"
-             lowUpperBound="35" highLowerBound="70"/>
-    </logging>
 </phpunit>

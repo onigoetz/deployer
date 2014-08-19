@@ -4,39 +4,49 @@ namespace Onigoetz\Deployer;
 
 use Onigoetz\Deployer\Command\DeployCommand;
 use Onigoetz\Deployer\Command\RollbackCommand;
+use Onigoetz\Deployer\Configuration\ConfigurationManager;
 use Symfony\Component\Console\Application;
 
 class Init
 {
-    public static $init = false;
-
-    public static function bootstrap($config)
+    public static function findConfiguration()
     {
-        if (self::$init) {
-            return true;
+        $current = __DIR__;
+        $previous = null;
+        while (true) {
+            $current = dirname($current);
+
+            if (is_dir("$current/.deployer")) {
+                return $current;
+            }
+
+            if ($previous == $current) {
+                throw new \Exception('Could not find a deployer configuration folder');
+            }
+
+            $previous = $current;
         }
-
-        include dirname(__DIR__) . '/functions.php';
-
-        define('ERROR_ENVIRONMENT_NOT_AVAILABLE', 1);
-        define('ERROR_SERVER_LOGIN_FAILED', 2);
-        define('ERROR_CANNOT_CREATE_DIRECTORY_DEPLOY', 3);
-        define('ERROR_CANNOT_CREATE_DIRECTORY_SNAPSHOTS', 4);
-
-        Registry::set('config', $config);
-
-        self::$init = true;
     }
 
-    public static function run($config)
+    public static function run()
     {
-        self::bootstrap($config);
+        $dir = self::findConfiguration();
 
-        //TODO :: Check configuration
+        $config_folder = "$dir/.deployer";
+
+        $configuration = array(
+            'directories' => include "$config_folder/directories.php",
+            'servers' => include "$config_folder/servers.php",
+            'sources' =>include "$config_folder/sources.php",
+            'tasks' => include "$config_folder/tasks.php",
+            'environments' => include "$config_folder/environments.php",
+        );
+
+        $manager = ConfigurationManager::create($configuration);
 
         $application = new Application();
-        $application->add(new DeployCommand);
-        $application->add(new RollbackCommand);
+        $application->add(new DeployCommand($manager));
+        $application->add(new RollbackCommand($manager));
         $application->run();
 
         exit(0);

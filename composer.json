@@ -23,5 +23,8 @@
         "psr-4": {
             "Onigoetz\\Deployer\\": "src/"
         }
-    }
+    },
+    "bin" : [
+        "deployer"
+    ]
 }

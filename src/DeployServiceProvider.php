@@ -5,6 +5,7 @@ namespace Onigoetz\Deployer;
 use Illuminate\Support\ServiceProvider;
 use Onigoetz\Deployer\Command\DeployCommand;
 use Onigoetz\Deployer\Command\RollbackCommand;
+use Onigoetz\Deployer\Configuration\ConfigurationManager;
 
 class DeployServiceProvider extends ServiceProvider
 {
@@ -32,19 +33,30 @@ class DeployServiceProvider extends ServiceProvider
      */
     public function register()
     {
+        $this->app['deployer.configuration'] = $this->app->share(
+            function ($app) {
+
+                $configuration = array(
+                    'directories' => $app['config']['deployer']['directories'],
+                    'servers' => $app['config']['deployer']['servers'],
+                    'sources' => $app['config']['deployer']['sources'],
+                    'tasks' => $app['config']['deployer']['tasks'],
+                    'environments' => $app['config']['deployer']['environments'],
+                );
+
+                return ConfigurationManager::create($configuration);
+            }
+        );
+
         $this->app['command.deployer.deploy'] = $this->app->share(
             function ($app) {
-                Init::bootstrap($app['config']['deploy']);
-
-                return new DeployCommand();
+                return new DeployCommand($app['deployer.configuration']);
             }
         );
 
         $this->app['command.deployer.rollback'] = $this->app->share(
             function ($app) {
-                Init::bootstrap($app['config']['deploy']);
-
-                return new RollbackCommand();
+                return new RollbackCommand($app['deployer.configuration']);
             }
         );
 
