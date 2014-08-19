@@ -5,12 +5,6 @@ use Onigoetz\Deployer\Configuration\Server;
 use Onigoetz\Deployer\Configuration\Source;
 use Onigoetz\Deployer\Configuration\Environment;
 
-/**
- * Created by IntelliJ IDEA.
- * User: onigoetz
- * Date: 05.08.14
- * Time: 22:12
- */
 class EnvironmentTest extends PHPUnit_Framework_TestCase
 {
     protected function getManager()
@@ -187,5 +181,30 @@ class EnvironmentTest extends PHPUnit_Framework_TestCase
         $environment = new Environment('production', $env, $mgr);
         $this->assertEquals($data['path'], $environment->getSource()->getPath());
         $this->assertEquals($data['branch'], $environment->getSource()->getBranch());
+    }
+
+    public function testExampleConfiguration()
+    {
+        $config_folder = dirname(dirname(__DIR__)).'/src/config';
+
+        $configuration = array(
+            'directories' => include "$config_folder/directories.php",
+            'servers' => include "$config_folder/servers.php",
+            'sources' =>include "$config_folder/sources.php",
+            'tasks' => include "$config_folder/tasks.php",
+            'environments' => include "$config_folder/environments.php",
+        );
+
+        $manager = ConfigurationManager::create($configuration);
+
+        foreach (array_keys($configuration['environments']) as $env) {
+            if (!$result = $manager->get('environment', $env)->isValid()) {
+                foreach ($manager->getLogs() as $line) {
+                    echo "$line\n";
+                }
+            }
+
+            $this->assertTrue($result, "The environment '$env' isn't valid!");
+        }
     }
 }

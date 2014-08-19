@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by IntelliJ IDEA.
- * User: onigoetz
- * Date: 05.08.14
- * Time: 21:50
- */
 
 namespace Onigoetz\Deployer\Configuration;
 
@@ -73,8 +67,12 @@ class Environment extends ConfigurationContainer
 
         foreach ($groups as $group) {
             $items = $this->manager->get('tasks', $group);
-            foreach ($items->getTasks() as $action) {
-                $actions[] = $action;
+            foreach ($items->getTasks() as $name => $action) {
+                if (is_numeric($name)) {
+                    $actions[] = $action;
+                } else {
+                    $actions[$name] = $action;
+                }
             }
         }
 

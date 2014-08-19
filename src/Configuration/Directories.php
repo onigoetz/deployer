@@ -35,6 +35,16 @@ class Directories extends InheritingConfigurationContainer
         return $this->getBinaries() . '/' . strftime($this->getBinaryName());
     }
 
+    public function getSubstitutions($binary)
+    {
+        return [
+            '{{root}}' => $this->getRoot(),
+            '{{binaries}}' => $this->getBinaries(),
+            '{{binary}}' => $binary,
+            '{{deploy}}' => $this->getDeploy(),
+        ];
+    }
+
     /**
      * {@inheritdoc}
      */

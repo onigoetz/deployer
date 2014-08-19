@@ -2,12 +2,6 @@
 use Onigoetz\Deployer\Configuration\ConfigurationManager;
 use Onigoetz\Deployer\Configuration\Source;
 
-/**
- * Created by IntelliJ IDEA.
- * User: onigoetz
- * Date: 05.08.14
- * Time: 22:12
- */
 class SourceTest extends PHPUnit_Framework_TestCase
 {
     protected function getManager()

@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by IntelliJ IDEA.
- * User: onigoetz
- * Date: 05.08.14
- * Time: 21:51
- */
 
 namespace Onigoetz\Deployer\Configuration\Sources;
 

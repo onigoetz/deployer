@@ -1,13 +1,6 @@
 <?php
-/**
- * Created by IntelliJ IDEA.
- * User: onigoetz
- * Date: 05.08.14
- * Time: 20:50
- */
 
 namespace Onigoetz\Deployer\Configuration\Containers;
-
 
 use Onigoetz\Deployer\Configuration\ConfigurationManager;
 

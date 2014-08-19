@@ -38,11 +38,26 @@ class ConfigurationManagerTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($manager->get('environment', 'prod')->isValid());
     }
 
-    public function testGetEvents()
+    public function testGetTasks()
     {
         $data = array(
             'environments' => array('prod' => array('tasks' => array('before' => ['do_before']))),
             'tasks' => array('do_before' => array(array('action' => 'prune'))),
+        );
+        $data += array( 'directories' => array('root' => '/var/www'),'sources' => array(), 'servers' => array(),);
+
+        $manager = ConfigurationManager::create($data);
+
+        $env = $manager->get('environment', 'prod');
+
+        $this->assertEquals($data['tasks']['do_before'], $env->getTasks('before'));
+    }
+
+    public function testGetNamedTasks()
+    {
+        $data = array(
+            'environments' => array('prod' => array('tasks' => array('before' => ['do_before']))),
+            'tasks' => array('do_before' => array('Do Pruning' => array('action' => 'prune'))),
         );
         $data += array( 'directories' => array('root' => '/var/www'),'sources' => array(), 'servers' => array(),);
 

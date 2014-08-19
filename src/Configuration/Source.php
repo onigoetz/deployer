@@ -21,11 +21,11 @@ class Source extends ExtendableConfigurationContainer
      */
     public static function make($name, array $data, ConfigurationManager $manager, Source $parent = null)
     {
-        if (!array_key_exists('strategy', $data) && !$parent) {
+        if (!array_key_exists('strategy', $data) && !array_key_exists('extends', $data) && !$parent) {
             throw new \LogicException('no strategy specified for this source');
         }
 
-        if ($parent) {
+        if ($parent || (array_key_exists('extends', $data) && $parent = $manager->get('source', $data['extends']))) {
             $strategy = $parent->getStrategy();
         } else {
             $strategy = $data['strategy'];
@@ -33,10 +33,10 @@ class Source extends ExtendableConfigurationContainer
 
         switch ($strategy) {
             case 'clone':
-                return new Cloned($name, $data, $manager);
+                return new Cloned($name, $data, $manager, $parent);
                 break;
             case 'upload':
-                return new Upload($name, $data, $manager);
+                return new Upload($name, $data, $manager, $parent);
                 break;
             default:
         }
@@ -54,7 +54,7 @@ class Source extends ExtendableConfigurationContainer
 
     public function getStrategy()
     {
-        return $this->data['strategy'];
+        return $this->getValueOrFail('strategy', "no 'strategy' specified for source '{$this->name}''");
     }
 
     /**

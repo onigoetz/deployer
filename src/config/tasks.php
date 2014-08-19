@@ -2,22 +2,20 @@
 
 return array(
     //What to do before the deploy
-    'actions_before' => array(
-        array(
-            'description' => 'Link the images',
+    'before_actions' => array(
+        'Link the images' => array(
             'action' => 'symlink',
             'target' => 'resources/images',
-            'link_name' => '{{snapshot}}/public/images'
+            'link_name' => '{{binary}}/public/images'
         ),
-        array(
-            'description' => 'Compose',
+        'Compose' => array(
             'action' => 'composer',
-            'dir' => '{{snapshot}}'
+            'dir' => '{{binary}}'
         )
     ),
 
     //What to do after the deploy
-    'actions_after' => array(
+    'after_actions' => array(
         array(
             'action' => 'prune',
             'min_folders_left' => 1,

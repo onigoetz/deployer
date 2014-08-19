@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by IntelliJ IDEA.
- * User: onigoetz
- * Date: 05.08.14
- * Time: 21:51
- */
 
 namespace Onigoetz\Deployer\Configuration\Sources;
 
@@ -14,8 +8,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 //the name of the class is "cloned" as "clone" is a reserved keyword
 class Cloned extends Source
 {
-    protected $resolvedUrl;
-
     public static $defaultType = 'git';
     public static $defaultBranch = 'master';
     public static $defaultSubmodules = false;
@@ -40,28 +32,43 @@ class Cloned extends Source
         return $this->getValueOrDefault('username', null);
     }
 
+    public function setUsername($username)
+    {
+        $this->data['username'] = $username;
+    }
+
     public function getPassword()
     {
         return $this->getValueOrDefault('password', null);
     }
 
+    public function setPassword($password)
+    {
+        $this->data['password'] = $password;
+    }
+
     public function getFinalUrl($dialog, OutputInterface $output)
     {
-        if ($this->resolvedUrl) {
-            return $this->resolvedUrl;
-        }
+        $re = "/^((?P<scheme>https?):\\/)?\\/?((?P<username>.*?)(:(?P<password>.*?)|)@)?(?P<uri>.*)/";
+        preg_match($re, $this->getPath(), $matches);
 
         //username provided ?
-        if (!$username = $this->getUsername()) {
-            $username = $dialog->ask($output, 'Your repository password');
+        if ($matches['username']) {
+            $username = $matches['username'];
+        } elseif (!$username = $this->getUsername()) {
+            $username = $dialog->ask($output, 'Your repository username: ');
+            $this->setUsername($username);
         }
 
         //password provided ?
-        if (!$password = $this->getPassword()) {
-            $password = $dialog->askHiddenResponse($output, 'Your repository password', false);
+        if ($matches['password']) {
+            $password = $matches['password'];
+        } elseif (!$password = $this->getPassword()) {
+            $password = $dialog->askHiddenResponse($output, 'Your repository password: ', false);
+            $this->setPassword($password);
         }
 
-        //HTTPS username:password@
-        return $this->resolvedUrl = str_replace('https://', "https://$username:$password@", $this->getPath());
+        //HTTP(S)? username:password@
+        return "{$matches['scheme']}://$username:$password@{$matches['uri']}";
     }
 }

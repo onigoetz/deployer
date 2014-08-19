@@ -70,7 +70,7 @@ class SourceCloneTest extends PHPUnit_Framework_TestCase
         $mgr->set(Source::make('master', $master_data, $mgr));
 
         $data = array('strategy' => 'clone', 'extends' => 'master');
-        $mgr->set($source = Source::make('apprentice', $data, $mgr));;
+        $mgr->set($source = Source::make('apprentice', $data, $mgr));
 
         $this->assertEquals(Cloned::$defaultBranch, $source->getBranch());
     }
@@ -199,6 +199,22 @@ class SourceCloneTest extends PHPUnit_Framework_TestCase
         );
     }
 
+    public function testGetFinalUrlComplete()
+    {
+        $final_path = 'https://user:pass@github.com/onigoetz/deployer';
+
+        $output = m::mock('Symfony\Component\Console\Output\OutputInterface');
+        $dialog = m::mock('Symfony\Component\Console\Helper\DialogHelper');
+        $dialog->shouldReceive('ask')->never();
+        $dialog->shouldReceive('askHiddenResponse')->never();
+
+        $data = ['strategy' => 'clone', 'path' => $final_path];
+
+        $source = Source::make('noname', $data, $this->getManager());
+
+        $this->assertEquals($final_path, $source->getFinalUrl($dialog, $output));
+    }
+
     public function testGetFinalUrlWithoutPasswordOnlyAskOnce()
     {
         $password = 'hey';
@@ -220,5 +236,36 @@ class SourceCloneTest extends PHPUnit_Framework_TestCase
             "https://{$data['username']}:{$password}@github.com/onigoetz/deployer",
             $source->getFinalUrl($dialog, $output)
         );
+    }
+
+    public function testGetFinalUrlWithoutPasswordUserInPath()
+    {
+        $start_path = 'https://user@github.com/onigoetz/deployer';
+        $password = 'hey';
+        $final_path = "https://user:{$password}@github.com/onigoetz/deployer";
+
+        $output = m::mock('Symfony\Component\Console\Output\OutputInterface');
+        $dialog = m::mock('Symfony\Component\Console\Helper\DialogHelper');
+        $dialog->shouldReceive('askHiddenResponse')->once()->andReturn($password);
+
+        $data = ['strategy' => 'clone', 'path' => $start_path];
+
+        $source = Source::make('noname', $data, $this->getManager());
+
+        $this->assertEquals($final_path, $source->getFinalUrl($dialog, $output));
+    }
+
+    public function testGetStrategyFromParent()
+    {
+        $manager = $this->getManager();
+
+        $data = array('strategy' => 'clone', 'path' => '/the/path');
+
+        $parent = Source::make('parent', $data, $manager);
+        $manager->set($parent);
+
+        $child = Source::make('child', ['extends' => 'parent'], $manager);
+
+        $this->assertEquals($data['strategy'], $child->getStrategy());
     }
 }
