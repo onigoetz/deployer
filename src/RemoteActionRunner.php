@@ -99,10 +99,10 @@ class RemoteActionRunner
     public function getSymlinkDestination($folder)
     {
         //get previous deploy symlink
-        $ln = str_replace("\n", '', $this->ssh->exec("ls -la $folder"));
+        $link = str_replace("\n", '', $this->ssh->exec("ls -la $folder"));
 
         //Store "previous" deploy
-        return trim(substr($ln, strpos($ln, '->') + 3));
+        return trim(substr($link, strpos($link, '->') + 3));
     }
 
     public function setupServer($destination_dir)
@@ -115,8 +115,7 @@ class RemoteActionRunner
             $this->exec('mkdir -p "' . $destination_dir . '"');
 
             if (!$this->isDir($destination_dir)) {
-                $this->output->writeln('<error>Cannot create directory "' . $destination_dir . '"</error>');
-                exit(self::EXIT_CODE_CANNOT_CREATE_DIRECTORY_SNAPSHOTS);
+                throw new \Exception("Cannot create directory '$destination_dir'");
             }
         }
         $this->output->writeln('<info> OK </info>');

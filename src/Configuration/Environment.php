@@ -7,7 +7,10 @@ use Onigoetz\Deployer\Configuration\Containers\ConfigurationContainer;
 class Environment extends ConfigurationContainer
 {
     /**
+     * Find if there are some overrides for a configuration
+     *
      * @param string $key
+     * @return bool
      */
     protected function hasOverrides($key)
     {
@@ -35,7 +38,7 @@ class Environment extends ConfigurationContainer
     {
         $servers = $this->getValueOrFail('servers', 'no servers specified');
 
-        $resolved_servers = array();
+        $resolved_servers = [];
         foreach ($servers as $server) {
             $resolved_servers[] = $this->manager->get('server', $server);
         }
@@ -56,16 +59,19 @@ class Environment extends ConfigurationContainer
 
     public function getTasks($event)
     {
-        $tasks = $this->getValueOrDefault('tasks', array());
+        $tasks = $this->getValueOrDefault('tasks', []);
 
         if (!array_key_exists($event, $tasks)) {
-            return array();
+            return [];
         }
 
         $groups = $tasks[$event];
-        $actions = array();
+        $actions = [];
 
         foreach ($groups as $group) {
+            /**
+             * @var $items Tasks
+             */
             $items = $this->manager->get('tasks', $group);
             foreach ($items->getTasks() as $name => $action) {
                 if (is_numeric($name)) {
@@ -90,6 +96,9 @@ class Environment extends ConfigurationContainer
                 return false;
             }
 
+            /**
+             * @var $server Server
+             */
             foreach ($this->getServers() as $server) {
                 if (!$server->isValid()) {
                     return false;

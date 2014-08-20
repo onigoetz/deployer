@@ -3,5 +3,8 @@
 echo "starting PHP Code Sniffer"
 vendor/bin/phpcs --standard=PSR2 src
 
+echo "starting PHPMD"
+vendor/bin/phpmd src text codesize,design,naming,unusedcode
+
 echo "Starting PHP Unit"
 vendor/bin/phpunit --coverage-html=coverage

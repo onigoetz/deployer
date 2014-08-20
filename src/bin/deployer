@@ -1,0 +1,54 @@
+#!/usr/bin/env php
+<?php
+
+use Onigoetz\Deployer\Command\DeployCommand;
+use Onigoetz\Deployer\Command\RollbackCommand;
+use Onigoetz\Deployer\Configuration\ConfigurationManager;
+use Symfony\Component\Console\Application;
+
+// Load the autoloader
+if (file_exists(__DIR__ . '/../../../../autoload.php')) {
+    //in a composer installation
+    require_once __DIR__ . '/../../../../autoload.php';
+} else {
+    //directly from the binary
+    require_once __DIR__ . '/../../vendor/autoload.php';
+}
+
+// Find the configuration
+$current = __DIR__;
+$previous = null;
+while (true) {
+    $current = dirname($current);
+
+    if (is_dir("$current/.deployer")) {
+        $config_folder = "$current/.deployer";
+        break;
+    }
+
+    // Arrived at this point we are at the root of the
+    // filesystem and the configuration is still not found
+    if ($previous == $current) {
+        throw new \Exception('Could not find a deployer configuration folder');
+    }
+
+    $previous = $current;
+}
+
+// Get the configuration
+$configuration = [
+    'directories' => include "$config_folder/directories.php",
+    'servers' => include "$config_folder/servers.php",
+    'sources' => include "$config_folder/sources.php",
+    'tasks' => include "$config_folder/tasks.php",
+    'environments' => include "$config_folder/environments.php",
+];
+
+// Initialize the configuration
+$manager = ConfigurationManager::create($configuration);
+
+// Let's start !
+$application = new Application();
+$application->add(new DeployCommand($manager));
+$application->add(new RollbackCommand($manager));
+$application->run();

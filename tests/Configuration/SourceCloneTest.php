@@ -48,9 +48,22 @@ class SourceCloneTest extends PHPUnit_Framework_TestCase
         $mgr->set(Source::make('master', $master_data, $mgr));
 
         $data = array('strategy' => 'clone', 'extends' => 'master');
-        $mgr->set($source = Source::make('apprentice', $data, $mgr));;
+        $mgr->set($source = Source::make('apprentice', $data, $mgr));
 
         $this->assertEquals($master_data['branch'], $source->getBranch());
+    }
+
+    public function testGetTypeInherited()
+    {
+        $mgr = $this->getManager();
+
+        $master_data = array('strategy' => 'clone', 'path' => '/main/path', 'branch' => 'master');
+        $mgr->set(Source::make('master', $master_data, $mgr));
+
+        $data = array('branch' => 'develop', 'extends' => 'master');
+        $mgr->set($source = Source::make('apprentice', $data, $mgr));
+
+        $this->assertInstanceOf('\Onigoetz\Deployer\Configuration\Sources\Cloned', $source);
     }
 
     public function testGetDefaultBranch()

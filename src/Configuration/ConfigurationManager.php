@@ -6,9 +6,9 @@ use Onigoetz\Deployer\Configuration\Containers\ConfigurationContainer;
 
 class ConfigurationManager
 {
-    protected $configurations = array();
+    protected $configurations = [];
 
-    public $logs = array();
+    public $logs = [];
 
     public static function create($data)
     {

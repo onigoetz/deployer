@@ -1,7 +1,7 @@
 <?php
 
-return array(
-    'cloned' => array(
+return [
+    'cloned' => [
         // 'clone' or 'upload'
         'strategy' => 'clone',
 
@@ -10,7 +10,7 @@ return array(
         'path' => 'git@github.com:onigoetz/deployer.git',
 
         //In this case, the username is created on the fly
-        //'path' => array(
+        //'path' => [
         //    'repository' => 'https://github.com/onigoetz/deployer.git',
         //    'username' => 'yourUsername',
         //	  'password' => 'yourPassword' //optional, if not provided, it will ask for it at deployment time
@@ -25,30 +25,30 @@ return array(
         'branch' => 'master',
 
         // Do you want submodules with it ?
-        'submodules' => true
-    ),
-    'uploaded' => array(
+        'submodules' => true,
+    ],
+    'uploaded' => [
         'strategy' => 'upload',
 
         'path' => dirname(__DIR__),
 
         //paths to include with the build, takes everything by default
-        'include' => array(
+        'include' => [
             'app',
             'public'
-        ),
+        ],
 
         //paths to exclude
-        'exclude' => array(
+        'exclude' => [
             'app/storage'
-        )
-    ),
-    'cloned_dev' => array(
+        ],
+    ],
+    'cloned_dev' => [
 
         //you can choose to extend an existing configuration
         'extends' => 'cloned',
 
         // the branch to use
-        'branch' => 'submodule'
-    ),
-);
+        'branch' => 'submodule',
+    ],
+];

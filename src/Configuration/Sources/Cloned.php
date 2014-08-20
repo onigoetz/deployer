@@ -3,6 +3,7 @@
 namespace Onigoetz\Deployer\Configuration\Sources;
 
 use Onigoetz\Deployer\Configuration\Source;
+use Symfony\Component\Console\Helper\DialogHelper;
 use Symfony\Component\Console\Output\OutputInterface;
 
 //the name of the class is "cloned" as "clone" is a reserved keyword
@@ -47,10 +48,10 @@ class Cloned extends Source
         $this->data['password'] = $password;
     }
 
-    public function getFinalUrl($dialog, OutputInterface $output)
+    public function getFinalUrl(DialogHelper $dialog, OutputInterface $output)
     {
-        $re = "/^((?P<scheme>https?):\\/)?\\/?((?P<username>.*?)(:(?P<password>.*?)|)@)?(?P<uri>.*)/";
-        preg_match($re, $this->getPath(), $matches);
+        $regex = "/^((?P<scheme>https?):\\/)?\\/?((?P<username>.*?)(:(?P<password>.*?)|)@)?(?P<uri>.*)/";
+        preg_match($regex, $this->getPath(), $matches);
 
         //username provided ?
         if ($matches['username']) {

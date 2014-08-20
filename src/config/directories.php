@@ -1,6 +1,6 @@
 <?php
 
-return array(
+return [
     //this folder will contain everything
     'root' => '/var/www/application/',
 
@@ -14,5 +14,5 @@ return array(
 
     // the pattern to use to name the deployed binaries on the server
     // uses strftime : http://php.net/strftime
-    'binary_name' => '%G-%m-%d_%H-%M'
-);
+    'binary_name' => '%G-%m-%d_%H-%M',
+];

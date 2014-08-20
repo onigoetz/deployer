@@ -5,7 +5,6 @@ namespace Onigoetz\Deployer\Configuration;
 use Onigoetz\Deployer\Configuration\Containers\ExtendableConfigurationContainer;
 use Onigoetz\Deployer\Configuration\Sources\Cloned;
 use Onigoetz\Deployer\Configuration\Sources\Upload;
-use Symfony\Component\Console\Output\OutputInterface;
 
 class Source extends ExtendableConfigurationContainer
 {
@@ -25,12 +24,30 @@ class Source extends ExtendableConfigurationContainer
             throw new \LogicException('no strategy specified for this source');
         }
 
-        if ($parent || (array_key_exists('extends', $data) && $parent = $manager->get('source', $data['extends']))) {
+        if ($parent) {
+            $strategy = $parent->getStrategy();
+        } elseif (array_key_exists('extends', $data) && $parent = $manager->get('source', $data['extends'])) {
             $strategy = $parent->getStrategy();
         } else {
             $strategy = $data['strategy'];
         }
 
+        return static::generate($strategy, $name, $data, $manager, $parent);
+    }
+
+    /**
+     * Create the actual source
+     *
+     * @param $strategy
+     * @param $name
+     * @param $data
+     * @param $manager
+     * @param $parent
+     * @return Cloned|Upload
+     * @throws \LogicException
+     */
+    protected static function generate($strategy, $name, $data, $manager, Source $parent = null)
+    {
         switch ($strategy) {
             case 'clone':
                 return new Cloned($name, $data, $manager, $parent);

@@ -8,7 +8,7 @@ class Git extends SCM
     {
         $git_command = str_replace("\n", "", $ssh->exec('which git'));
         if ($git_command == '') {
-            //TODO :: ERROR
+            throw new \Exception('the git command wasn\'t found on this server');
         }
 
         return $git_command;

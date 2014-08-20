@@ -3,7 +3,6 @@
 namespace Onigoetz\Deployer\Command;
 
 use Net_SFTP;
-use Onigoetz\Deployer\Actions;
 use Onigoetz\Deployer\Configuration\Environment;
 use Onigoetz\Deployer\Configuration\Sources\Cloned;
 use Onigoetz\Deployer\Configuration\Sources\Upload;
@@ -28,29 +27,10 @@ class DeployCommand extends BaseCommand
             define('VERBOSE', $input->getOption('verbose'));
         }
 
-        $env = $input->getArgument('to');
+        $environment = $this->getEnvironment($input->getArgument('to'), $output);
 
-        try {
-            /**
-             * @var Environment
-             */
-            $environment = $this->manager->get('environment', $env);
-        } catch (\LogicException $e) {
-            $output->writeln('<error>Environnement not available</error>');
-            exit(self::EXIT_CODE_ENVIRONMENT_NOT_AVAILABLE);
-        }
-
-        if (!$environment->isValid()) {
-            foreach ($this->manager->getLogs() as $line) {
-                $output->writeln("<error>$line</error>");
-            }
-            exit(self::EXIT_CODE_INVALID_CONFIGURATION);
-        }
-
-        //Prepares the snapshot name
-        $dirs = $environment->getDirectories();
-
-        $dest = $dirs->getNewBinaryName();
+        //Prepares the binary name
+        $dest = $environment->getDirectories()->getNewBinaryName();
 
         $output->writeln('This binary\'s name will be : ' . $dest);
 
@@ -78,12 +58,11 @@ class DeployCommand extends BaseCommand
         if ($environment->getSource() instanceof Cloned) {
             $class = 'Onigoetz\\Deployer\\SCM\\' . ucfirst($environment->getSource()->getType());
             if (!class_exists($class)) {
-                $output->writeln('<error> Cannot find SCM: ' . $class . ' </error>');
-                exit(2);
+                throw new \Exception("Cannot find SCM '$class'");
             }
 
             /**
-             * @var /Onigoetz/Deployer/SCM/SCM
+             * @var $scm \Onigoetz\Deployer\SCM\SCM
              */
             $scm = new $class($environment);
 

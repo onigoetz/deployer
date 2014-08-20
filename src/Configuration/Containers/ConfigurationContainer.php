@@ -2,7 +2,6 @@
 
 namespace Onigoetz\Deployer\Configuration\Containers;
 
-
 use Onigoetz\Deployer\Configuration\ConfigurationManager;
 
 abstract class ConfigurationContainer
@@ -49,7 +48,7 @@ abstract class ConfigurationContainer
      *
      * @param string $key
      * @param $error_message
-     * @return string
+     * @return mixed
      * @throws \LogicException
      */
     protected function getValueOrFail($key, $error_message)

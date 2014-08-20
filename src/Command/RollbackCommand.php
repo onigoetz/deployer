@@ -3,7 +3,6 @@
 namespace Onigoetz\Deployer\Command;
 
 use Net_SFTP;
-use Onigoetz\Deployer\Actions;
 use Onigoetz\Deployer\Configuration\Environment;
 use Onigoetz\Deployer\RemoteActionRunner;
 use Symfony\Component\Console\Input\InputArgument;
@@ -26,24 +25,7 @@ class RollbackCommand extends BaseCommand
             define('VERBOSE', $input->getOption('verbose'));
         }
 
-        $env = $input->getArgument('to');
-
-        try {
-            /**
-             * @var Environment
-             */
-            $environment = $this->manager->get('environment', $env);
-        } catch (\LogicException $e) {
-            $output->writeln('<error>Environnement not available</error>');
-            exit(self::EXIT_CODE_ENVIRONMENT_NOT_AVAILABLE);
-        }
-
-        if (!$environment->isValid()) {
-            foreach ($this->manager->getLogs() as $line) {
-                $output->writeln("<error>$line</error>");
-            }
-            exit(self::EXIT_CODE_INVALID_CONFIGURATION);
-        }
+        $environment = $this->getEnvironment($input->getArgument('to'), $output);
 
         $this->allServers(
             $environment,
@@ -61,17 +43,17 @@ class RollbackCommand extends BaseCommand
 
         $previous = trim($ssh->exec('cat ' . $dirs->getRoot() . '/previous'));
         if ($previous != '') {
-            $actions = array(
-                'Removing the symlink of the release to rollback' => array(
+            $actions = [
+                'Removing the symlink of the release to rollback' => [
                     'action' => 'rmfile',
                     'file' => $dirs->getDeploy()
-                ),
-                'Link it again to the snapshot ' . $previous => array(
+                ],
+                'Link it again to the snapshot ' . $previous => [
                     'action' => 'symlink',
                     'target' => $previous,
                     'link_name' => $dirs->getDeploy()
-                )
-            );
+                ]
+            ];
 
             $output->writeln('Previous snapshot : ' . $previous);
             $output->writeln("Reverting...\n", 'blue');

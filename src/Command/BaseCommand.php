@@ -6,17 +6,12 @@ use Net_SFTP;
 use Onigoetz\Deployer\Configuration\ConfigurationManager;
 use Onigoetz\Deployer\Configuration\Environment;
 use Onigoetz\Deployer\MethodCaller;
+use Onigoetz\Deployer\RemoteActionRunner;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class BaseCommand extends Command
 {
-    const EXIT_CODE_ENVIRONMENT_NOT_AVAILABLE = 1;
-    const EXIT_CODE_SERVER_LOGIN_FAILED = 2;
-    const EXIT_CODE_CANNOT_CREATE_DIRECTORY_DEPLOY = 3;
-    const EXIT_CODE_CANNOT_CREATE_DIRECTORY_SNAPSHOTS = 4;
-    const EXIT_CODE_INVALID_CONFIGURATION = 5;
-
     protected $manager;
 
     public function __construct(ConfigurationManager $manager)
@@ -25,7 +20,7 @@ class BaseCommand extends Command
         $this->manager = $manager;
     }
 
-    protected function prepareDir($dir, $directories)
+    protected function prepareDir($dir, array $directories)
     {
         $dir = strtr($dir, $directories);
 
@@ -36,7 +31,7 @@ class BaseCommand extends Command
         return $dir;
     }
 
-    protected function runActions($runner, $actions, $output, $directories)
+    protected function runActions(RemoteActionRunner $runner, $actions, OutputInterface $output, $directories)
     {
         foreach ($actions as $description => $action) {
             $output->writeln($description);
@@ -44,7 +39,7 @@ class BaseCommand extends Command
         }
     }
 
-    protected function runAction($runner, $action, $output, $directories)
+    protected function runAction(RemoteActionRunner $runner, $action, OutputInterface $output, $directories)
     {
         $method = $action['action'];
         unset($action['action']);
@@ -61,6 +56,9 @@ class BaseCommand extends Command
     protected function allServers(Environment $environment, OutputInterface $output, \Closure $action)
     {
         //Loop on the servers
+        /**
+         * @var $server \Onigoetz\Deployer\Configuration\Server
+         */
         foreach ($environment->getServers() as $server) {
             $output->writeln("Deploying on <info>{$server->getHost()}</info>");
             $output->writeln('-------------------------------------------------');
@@ -74,13 +72,41 @@ class BaseCommand extends Command
             //Login to server
             $ssh = new Net_SFTP($server->getHost());
             if (!$ssh->login($server->getUsername(), $password)) {
-                $output->writeln('<error>Login failed</error>');
-                exit(self::EXIT_CODE_SERVER_LOGIN_FAILED);
+                throw new \Exception("Login failed on host '{$server->getHost()}'");
             }
 
             $action($ssh);
 
             $ssh->disconnect();
         }
+    }
+
+    /**
+     * Get a valid environment form string
+     *
+     * @param $env
+     * @param OutputInterface $output
+     * @return Environment
+     * @throws \Exception
+     */
+    protected function getEnvironment($env, OutputInterface $output)
+    {
+        try {
+            /**
+             * @var Environment
+             */
+            $environment = $this->manager->get('environment', $env);
+        } catch (\LogicException $e) {
+            throw new \Exception("Environment '$env' doesn't exist");
+        }
+
+        if (!$environment->isValid()) {
+            foreach ($this->manager->getLogs() as $line) {
+                $output->writeln("<error>$line</error>");
+            }
+            throw new \Exception("Invalid configuration for '$env'");
+        }
+
+        return $environment;
     }
 }

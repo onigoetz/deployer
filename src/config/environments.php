@@ -1,21 +1,21 @@
 <?php
 
-return array(
-    'prod' => array(
+return [
+    'prod' => [
         'source' => 'cloned',
-        'servers' => array('www1.youmewine.ch'),
-        'overrides' => array(
-            'source' => array('branch' => 'master'),
-        ),
-        'tasks' => array('before' => ['before_actions'])
-    ),
-    'dev' => array(
+        'servers' => ['www1.youmewine.ch'],
+        'overrides' => [
+            'source' => ['branch' => 'master'],
+        ],
+        'tasks' => ['before' => ['before_actions']]
+    ],
+    'dev' => [
         'source' => 'cloned_dev',
-        'servers' => array('www1.youmewine.ch'),
-        'overrides' => array(
-            'source' => array('branch' => 'develop'),
-            'directories' => array('root' => '/home/youmewine/domains/dev.youmewine.com/www/'),
-        ),
-        'tasks' => array('before' => ['before_actions'], 'after' => ['after_actions'])
-    ),
-);
+        'servers' => ['www1.youmewine.ch'],
+        'overrides' => [
+            'source' => ['branch' => 'develop'],
+            'directories' => ['root' => '/home/youmewine/domains/dev.youmewine.com/www/'],
+        ],
+        'tasks' => ['before' => ['before_actions'], 'after' => ['after_actions']]
+    ],
+];

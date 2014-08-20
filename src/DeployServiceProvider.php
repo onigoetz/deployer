@@ -27,13 +27,13 @@ class DeployServiceProvider extends ServiceProvider
 
         $this->app['deployer.configuration'] = $this->app->share(
             function ($app) {
-                $configuration = array(
+                $configuration = [
                     'directories' => $app['config']['deployer::directories'],
                     'servers' => $app['config']['deployer::servers'],
                     'sources' => $app['config']['deployer::sources'],
                     'tasks' => $app['config']['deployer::tasks'],
                     'environments' => $app['config']['deployer::environments'],
-                );
+                ];
 
                 return ConfigurationManager::create($configuration);
             }
@@ -61,6 +61,6 @@ class DeployServiceProvider extends ServiceProvider
      */
     public function provides()
     {
-        return array('command.deployer.deploy', 'command.deployer.rollback');
+        return ['command.deployer.deploy', 'command.deployer.rollback'];
     }
 }

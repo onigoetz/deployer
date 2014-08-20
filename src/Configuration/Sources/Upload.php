@@ -6,8 +6,8 @@ use Onigoetz\Deployer\Configuration\Source;
 
 class Upload extends Source
 {
-    public static $defaultInclude = array();
-    public static $defaultExclude = array();
+    public static $defaultInclude = [];
+    public static $defaultExclude = [];
 
     public function getInclude()
     {
