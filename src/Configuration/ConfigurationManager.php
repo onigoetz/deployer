@@ -44,11 +44,26 @@ class ConfigurationManager
      */
     public function get($type, $key)
     {
-        if (!array_key_exists($type, $this->configurations) || !array_key_exists($key, $this->configurations[$type])) {
+        if (!$this->has($type, $key)) {
             throw new \LogicException("No item of type '$type' with name '$key' in the configuration manager");
         }
 
         return $this->configurations[$type][$key];
+    }
+
+    /**
+     * @param string $type
+     * @param string $key
+     *
+     * @return bool
+     */
+    public function has($type, $key)
+    {
+        if (!array_key_exists($type, $this->configurations) || !array_key_exists($key, $this->configurations[$type])) {
+            return false;
+        }
+
+        return true;
     }
 
     /**

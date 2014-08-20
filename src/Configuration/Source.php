@@ -20,34 +20,8 @@ class Source extends ExtendableConfigurationContainer
      */
     public static function make($name, array $data, ConfigurationManager $manager, Source $parent = null)
     {
-        if (!array_key_exists('strategy', $data) && !array_key_exists('extends', $data) && !$parent) {
-            throw new \LogicException('no strategy specified for this source');
-        }
+        $strategy = static::findStrategy($name, $data, $manager, $parent);
 
-        if ($parent) {
-            $strategy = $parent->getStrategy();
-        } elseif (array_key_exists('extends', $data) && $parent = $manager->get('source', $data['extends'])) {
-            $strategy = $parent->getStrategy();
-        } else {
-            $strategy = $data['strategy'];
-        }
-
-        return static::generate($strategy, $name, $data, $manager, $parent);
-    }
-
-    /**
-     * Create the actual source
-     *
-     * @param $strategy
-     * @param $name
-     * @param $data
-     * @param $manager
-     * @param $parent
-     * @return Cloned|Upload
-     * @throws \LogicException
-     */
-    protected static function generate($strategy, $name, $data, $manager, Source $parent = null)
-    {
         switch ($strategy) {
             case 'clone':
                 return new Cloned($name, $data, $manager, $parent);
@@ -58,7 +32,25 @@ class Source extends ExtendableConfigurationContainer
             default:
         }
 
-        throw new \LogicException("Unrecognized strategy '{$data['strategy']}'");
+        throw new \LogicException("Unrecognized strategy '{$strategy}'");
+
+    }
+
+    protected static function findStrategy($name, $data, ConfigurationManager $manager, Source $parent = null)
+    {
+        if (isset($data['strategy'])) {
+            return $data['strategy'];
+        }
+
+        if ($parent) {
+            return $parent->getStrategy();
+        }
+
+        if (isset($data['extends']) && $manager->has('source', $data['extends'])) {
+            return $manager->get('source', $data['extends'])->getStrategy();
+        }
+
+        throw new \LogicException("Cannot find a valid strategy for the source '$name'");
     }
 
     /**
