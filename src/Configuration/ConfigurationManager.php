@@ -21,7 +21,7 @@ class ConfigurationManager
         }
 
         foreach ($data['sources'] as $name => $source) {
-            $manager->set(new Source($name, $source, $manager));
+            $manager->set(Source::make($name, $source, $manager));
         }
 
         foreach ($data['environments'] as $name => $environment) {

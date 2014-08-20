@@ -17,31 +17,22 @@ class DeployServiceProvider extends ServiceProvider
     protected $defer = true;
 
     /**
-     * Bootstrap the application events.
-     *
-     * @return void
-     */
-    public function boot()
-    {
-        $this->package('onigoetz/deployer');
-    }
-
-    /**
      * Register the service provider.
      *
      * @return void
      */
     public function register()
     {
+        $this->app['config']->package('onigoetz/deployer', __DIR__ . '/config');
+
         $this->app['deployer.configuration'] = $this->app->share(
             function ($app) {
-
                 $configuration = array(
-                    'directories' => $app['config']['deployer']['directories'],
-                    'servers' => $app['config']['deployer']['servers'],
-                    'sources' => $app['config']['deployer']['sources'],
-                    'tasks' => $app['config']['deployer']['tasks'],
-                    'environments' => $app['config']['deployer']['environments'],
+                    'directories' => $app['config']['deployer::directories'],
+                    'servers' => $app['config']['deployer::servers'],
+                    'sources' => $app['config']['deployer::sources'],
+                    'tasks' => $app['config']['deployer::tasks'],
+                    'environments' => $app['config']['deployer::environments'],
                 );
 
                 return ConfigurationManager::create($configuration);
