@@ -2,7 +2,7 @@
 layout: default
 ---
 
-# Introduction
+## Introduction
 
 Deployer is a tool that helps to deploy projects of any type to a server with minimal requirements.
 
@@ -21,8 +21,8 @@ Deploying is as simple as :
 
 Two commands are available
 
-- server:deploy : To deploy the latest commit on one or more servers
-- server:rollback : To rollback the latest deploy on one or more servers
+- `server:deploy` : To deploy the latest commit on one or more servers
+- `server:rollback` : To rollback the latest deploy on one or more servers
 
 ## Installation
 
@@ -48,46 +48,32 @@ The syntax is explained [here](https://github.com/onigoetz/deployer/wiki/Options
 Add the following lines to your application in `config/local/app.php`
 
 ```php
-
     'providers' => append_config(
         ['Onigoetz\Deployer\DeployServiceProvider']
     ),
-
 ```
 
-Then create a config file named `deploy.php` in `app/config`
-```php
-<?php
+With that part configured you can run `./artisan config:publish onigoetz/deployer`
 
-return array(
-    ...
-);
-```
+this will copy the default configurations to `config/packages/onigoetz/deployer`
+You can find the details of each file in the [Configuration section](#configuration-options)
 
 Then you can run `./artisan server:deploy production` to deploy
 
 ### Standalone launcher
 
-This time the configuration is done in the executable script.
+This time the configuration is made in a folder called `.deployer`
 
-Create a file named `deploy` (actually you can name it the way you want)
-```php
-#!/usr/bin/env php
-<?php
+to do this, add deployer to your composer dependencies and do
 
-$config = array(
-    ...
-);
-
-include 'vendor/autoload.php';
-\Deployer\Init::run($config);
+```bash
+cp vendor/onigoetz/deployer/src/config .deployer
 ```
+You can now configure your infrastructure.
 
-Chmod the file to executable
+Then you can run `vendor/bin/deployer server:deploy production` to deploy
 
-Then you can run `./deploy server:deploy production` to deploy
-
-# Configuration
+## Configuration Options
 
 The configuration is separated in a few files, each file has a specific purpose
 
@@ -97,19 +83,17 @@ The configuration is separated in a few files, each file has a specific purpose
 - `tasks.php` Sets of tasks to execute
 - `environments.php` Combine all the above in deploy sets
 
-
-
-## `sources.php`
+### `sources.php`
 
 This is an array of sources, the key is the name of the source and has the following options:
 
-### Global Options
+#### Global Options
 
-#### - `strategy`
+__- `strategy`__<br />
 - `clone` will clone a git repository
 - `upload` will duplicate the current repository, zip and upload it.
 
-#### - `path`
+__- `path`__<br />
 Where to take the release from
 
 For the `upload` strategy, specify an absolute path on your machine
@@ -119,26 +103,26 @@ For the `clone` strategy you have two options.
 1. Fill the full path to the repository (like `git@github.com:onigoetz/deployer.git`)
 2. Provide an array with `repository`, `username` and `password` (the password is optional as it can be requested at runtime)
 
-### Clone Specific options
+#### Clone Specific options
 
-#### - `type`
+__- `type`__<br />
 Only `git` is available at the moment
 
-#### - `branch`
+__- `branch`__<br />
 `master` by default
 
-#### - `submodules`
+__- `submodules`__<br />
 `true` or `false` if you want to include submodules or not
 
-### Upload specific options
+#### Upload specific options
 
-#### - `include`
+__- `include`__<br />
 an array of paths to include in the build
 
-#### - `exclude`
+__- `exclude`__<br />
 an array of paths to exclude from the build
 
-### Example
+#### Example
 
 ```
 <?php
@@ -146,7 +130,7 @@ an array of paths to exclude from the build
 return array(
 	'source_name' => array(
 	    'strategy' => 'clone',
-	
+
 		'path' => 'git@github.com:onigoetz/deployer.git',
 		'type' => 'git',
 	),
@@ -155,24 +139,21 @@ return array(
 ```
 
 
-
-## `servers.php`
+### `servers.php`
 
 This is an array of servers, the key is the name of the server and has the following options:
 
-#### - `host`
+__- `host`__<br />
 The hostname or IP address
 
-#### - `username`
+__- `username`__<br />
 The SSH username to deploy
 
-#### - `password`
+__- `password`__<br />
 The SSH password to deploy (optional as it can be requested at runtime)
 
 
-
-
-## `directories.php`
+### `directories.php`
 
 This file contains the directories where the files will be put.
 
@@ -185,39 +166,39 @@ the structure is as follows :
         {$binary_name}/
         ...
     {$deploy}/
-                      
+
 ```
 
-#### - `root`
-The main folder, will contain the others
+__- `root`__<br />
+The main folder
 
-#### - `binaries`
+__- `binaries`__<br />
 The binaries folder, contains all snapshots, current and old ones (`binaries` by default)
 
-#### - `binary_name`
+__- `binary_name`__<br />
 The folder name that will contain the binaries (`%G-%m-%d_%H-%M` by default)
 Uses strftime : [http://php.net/strftime]()
 
-#### - `deploy`
+__- `deploy`__<br />
 Symlink to the current version (`www` by default)
 
 
 
 
-## `tasks.php`
+### `tasks.php`
 //TO DEFINE
 
 
-## `environments.php`
+### `environments.php`
 This is an array of environments, the key is the name of the environment and has the following options:
 
-#### - `source`
+__- `source`__<br />
 The source name, defined in `sources.php`
 
-#### - `servers`
+__- `servers`__<br />
 an array of servers, defined in  `servers.php`
 
-#### - `overrides`
+__- `overrides`__<br />
 an array of overrides, with this you can override :
 - source
 - directories

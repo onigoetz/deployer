@@ -1,0 +1,118 @@
+.nav {
+    padding-left: 0;
+    margin-bottom: 0;
+    list-style: none;
+
+    > li {
+        position: relative;
+        display: block;
+
+        > a {
+            position: relative;
+            display: block;
+            padding: 4px 8px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #666;
+
+            &:hover,
+            &:focus {
+                text-decoration: none;
+                background-color: #eee
+            }
+
+            > img {
+                max-width: none
+            }
+        }
+
+        &.disabled > a {
+            color: #999;
+
+            &:hover,
+            &:focus {
+                color: #999;
+                text-decoration: none;
+                cursor: not-allowed;
+                background-color: transparent
+            }
+        }
+    }
+
+    .open > a,
+    .open > a:hover,
+    .open > a:focus {
+        background-color: #eee;
+        border-color: #428bca
+    }
+
+    .nav-divider {
+        height: 1px;
+        margin: 9px 0;
+        overflow: hidden;
+        background-color: #e5e5e5
+    }
+}
+
+/*
+ * Sub styling
+ */
+
+.nav .nav {
+    > li > a {
+        padding-left: 15px;
+        padding-top: 1px;
+        padding-bottom: 1px;
+        font-size: 12px;
+        font-weight: 400;
+    }
+
+    .nav > li > a {
+        padding-left:25px;
+    }
+
+    .nav .nav > li > a {
+        padding-left:35px;
+    }
+}
+
+/*
+ * Active navigation styling
+ */
+/*.nav .nav {
+    display: none;
+}
+.nav > .active > ul {
+    display: block;
+}
+.nav .nav {
+    display: none;
+    padding-bottom: 10px;
+}   */
+
+.nav > .active > a,
+.nav > .active:hover > a,
+.nav > .active:focus > a {
+    font-weight: 700;
+    color: #39C;
+    background-color: transparent;
+    border-left: 2px solid #39C;
+    margin-left:-2px;
+}
+
+.nav .nav > .active > a,
+.nav .nav > .active:hover > a,
+.nav .nav > .active:focus > a {
+    border-left-width:1px;
+    margin-left:-1px;
+}
+
+
+/*
+ * Fixed navigation
+ */
+#nav.fixed > .nav {
+    position:relative;
+}
+
+

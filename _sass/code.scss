@@ -1,3 +1,28 @@
+
+
+code, pre {
+    font-family:Monaco, Bitstream Vera Sans Mono, Lucida Console, Terminal;
+    color:#333;
+}
+
+p code, pre code {
+    font-size:12px;
+}
+
+pre {
+    padding:8px 15px;
+    background: #f8f8f8;
+    border-radius:5px;
+    border:1px solid #e5e5e5;
+    overflow-x: auto;
+}
+
+@media print, screen and (max-width: 720px) {
+    pre, code {
+        word-wrap: normal;
+    }
+}
+
 .highlight  { background: #ffffff; }
 .highlight .c { color: #999988; font-style: italic } /* Comment */
 .highlight .err { color: #a61717; background-color: #e3d2d2 } /* Error */

@@ -1,0 +1,239 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Deployer by onigoetz</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+</head>
+<body>
+<div class="wrapper">
+    <header>
+        <h1>Deployer</h1>
+
+        <p>A configurable deploy script</p>
+
+        <ul>
+            <li><a href="https://github.com/onigoetz/deployer/zipball/master">Download <strong>ZIP File</strong></a></li>
+            <li><a href="https://github.com/onigoetz/deployer/tarball/master">Download <strong>TAR Ball</strong></a></li>
+            <li><a href="https://github.com/onigoetz/deployer">View On <strong>GitHub</strong></a></li>
+        </ul>
+    </header>
+    <section id=content><h2 id="introduction">Introduction</h2>
+
+<p>Deployer is a tool that helps to deploy projects of any type to a server with minimal requirements.</p>
+
+<p>Requirements :</p>
+
+<ul>
+<li>SSH Connection to the server</li>
+<li>PHP if you want to use composer</li>
+</ul>
+
+<p>The library is a work in progress and could do a lot more things but for the moment it does what I need it to.</p>
+
+<h2 id="usage">Usage</h2>
+
+<p>Deploying is as simple as :</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">vendor/bin/deployer server:deploy production
+</code></pre></div>
+<p>Two commands are available</p>
+
+<ul>
+<li><code>server:deploy</code> : To deploy the latest commit on one or more servers</li>
+<li><code>server:rollback</code> : To rollback the latest deploy on one or more servers</li>
+</ul>
+
+<h2 id="installation">Installation</h2>
+
+<p>You can install the library through <a href="http://getcomposer.org">composer</a>. All you need is to add it as dependency to your composer.json.</p>
+<div class="highlight"><pre><code class="language-json" data-lang="json"><span class="p">{</span>
+    <span class="nt">&quot;require-dev&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;onigoetz/deployer&quot;</span><span class="p">:</span> <span class="s2">&quot;1.0.0-beta1&quot;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<h2 id="configuration">Configuration</h2>
+
+<p>There are two ways to configure the deployer, in both cases, the idea is that an array holds the complete configuration,
+it&#39;s easier to maintain an use than a lot of different configuration classes.</p>
+
+<p>The syntax is explained <a href="https://github.com/onigoetz/deployer/wiki/Options">here</a></p>
+
+<h3 id="in-laravel-4">In Laravel 4</h3>
+
+<p>Add the following lines to your application in <code>config/local/app.php</code></p>
+<div class="highlight"><pre><code class="language-php" data-lang="php"><span class="x">    &#39;providers&#39; =&gt; append_config(</span>
+<span class="x">        [&#39;Onigoetz\Deployer\DeployServiceProvider&#39;]</span>
+<span class="x">    ),</span>
+</code></pre></div>
+<p>With that part configured you can run <code>./artisan config:publish onigoetz/deployer</code></p>
+
+<p>this will copy the default configurations to <code>config/packages/onigoetz/deployer</code>
+You can find the details of each file in the <a href="#configuration-options">Configuration section</a></p>
+
+<p>Then you can run <code>./artisan server:deploy production</code> to deploy</p>
+
+<h3 id="standalone-launcher">Standalone launcher</h3>
+
+<p>This time the configuration is made in a folder called <code>.deployer</code></p>
+
+<p>to do this, add deployer to your composer dependencies and do</p>
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">cp vendor/onigoetz/deployer/src/config .deployer
+</code></pre></div>
+<p>You can now configure your infrastructure.</p>
+
+<p>Then you can run <code>vendor/bin/deployer server:deploy production</code> to deploy</p>
+
+<h2 id="configuration-options">Configuration Options</h2>
+
+<p>The configuration is separated in a few files, each file has a specific purpose</p>
+
+<ul>
+<li><code>sources.php</code> where do the releases come from ?</li>
+<li><code>servers.php</code> what servers are available to deploy to ?</li>
+<li><code>directories.php</code> what is the file structure ?</li>
+<li><code>tasks.php</code> Sets of tasks to execute</li>
+<li><code>environments.php</code> Combine all the above in deploy sets</li>
+</ul>
+
+<h3 id="sources.php"><code>sources.php</code></h3>
+
+<p>This is an array of sources, the key is the name of the source and has the following options:</p>
+
+<h4 id="global-options">Global Options</h4>
+
+<p><strong>- <code>strategy</code></strong><br />
+- <code>clone</code> will clone a git repository
+- <code>upload</code> will duplicate the current repository, zip and upload it.</p>
+
+<p><strong>- <code>path</code></strong><br />
+Where to take the release from</p>
+
+<p>For the <code>upload</code> strategy, specify an absolute path on your machine</p>
+
+<p>For the <code>clone</code> strategy you have two options.</p>
+
+<ol>
+<li>Fill the full path to the repository (like <code>git@github.com:onigoetz/deployer.git</code>)</li>
+<li>Provide an array with <code>repository</code>, <code>username</code> and <code>password</code> (the password is optional as it can be requested at runtime)</li>
+</ol>
+
+<h4 id="clone-specific-options">Clone Specific options</h4>
+
+<p><strong>- <code>type</code></strong><br />
+Only <code>git</code> is available at the moment</p>
+
+<p><strong>- <code>branch</code></strong><br />
+<code>master</code> by default</p>
+
+<p><strong>- <code>submodules</code></strong><br />
+<code>true</code> or <code>false</code> if you want to include submodules or not</p>
+
+<h4 id="upload-specific-options">Upload specific options</h4>
+
+<p><strong>- <code>include</code></strong><br />
+an array of paths to include in the build</p>
+
+<p><strong>- <code>exclude</code></strong><br />
+an array of paths to exclude from the build</p>
+
+<h4 id="example">Example</h4>
+<div class="highlight"><pre><code class="language-text" data-lang="text">&lt;?php
+
+return array(
+    &#39;source_name&#39; =&gt; array(
+        &#39;strategy&#39; =&gt; &#39;clone&#39;,
+
+        &#39;path&#39; =&gt; &#39;git@github.com:onigoetz/deployer.git&#39;,
+        &#39;type&#39; =&gt; &#39;git&#39;,
+    ),
+)
+</code></pre></div>
+<h3 id="servers.php"><code>servers.php</code></h3>
+
+<p>This is an array of servers, the key is the name of the server and has the following options:</p>
+
+<p><strong>- <code>host</code></strong><br />
+The hostname or IP address</p>
+
+<p><strong>- <code>username</code></strong><br />
+The SSH username to deploy</p>
+
+<p><strong>- <code>password</code></strong><br />
+The SSH password to deploy (optional as it can be requested at runtime)</p>
+
+<h3 id="directories.php"><code>directories.php</code></h3>
+
+<p>This file contains the directories where the files will be put.</p>
+
+<p>the structure is as follows :</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">{$root}/
+    {$binaries}/
+        {$binary_name}/
+        {$binary_name}/
+        ...
+    {$deploy}/
+</code></pre></div>
+<p><strong>- <code>root</code></strong><br />
+The main folder</p>
+
+<p><strong>- <code>binaries</code></strong><br />
+The binaries folder, contains all snapshots, current and old ones (<code>binaries</code> by default)</p>
+
+<p><strong>- <code>binary_name</code></strong><br />
+The folder name that will contain the binaries (<code>%G-%m-%d_%H-%M</code> by default)
+Uses strftime : <a href="">http://php.net/strftime</a></p>
+
+<p><strong>- <code>deploy</code></strong><br />
+Symlink to the current version (<code>www</code> by default)</p>
+
+<h3 id="tasks.php"><code>tasks.php</code></h3>
+
+<p>//TO DEFINE</p>
+
+<h3 id="environments.php"><code>environments.php</code></h3>
+
+<p>This is an array of environments, the key is the name of the environment and has the following options:</p>
+
+<p><strong>- <code>source</code></strong><br />
+The source name, defined in <code>sources.php</code></p>
+
+<p><strong>- <code>servers</code></strong><br />
+an array of servers, defined in  <code>servers.php</code></p>
+
+<p><strong>- <code>overrides</code></strong><br />
+an array of overrides, with this you can override :
+- source
+- directories</p>
+
+<p>with the same syntax and options as in the corresponding files</p>
+</section>
+    <aside id=nav></aside>
+    <footer>
+        <p>This project is maintained by <a href="http://onigoetz.ch">onigoetz</a></p>
+        <p>
+            <small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small>
+        </p>
+    </footer>
+</div>
+<script src="javascripts/scale.fix.js"></script>
+<script src="javascripts/toc.js"></script>
+<script src="javascripts/scroll.js"></script>
+
+<script type="text/javascript">
+    var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+    document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+    try {var pageTracker = _gat._getTracker("UA-3551397-2");pageTracker._trackPageview();} catch (err) {}
+</script>
+
+</body>
+</html>

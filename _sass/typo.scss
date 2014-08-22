@@ -1,0 +1,53 @@
+h1, h2, h3, h4, h5, h6 {
+    color: #222;
+}
+
+/* https://drewish.com/tools/vertical-rhythm/ numbers : 14 - 22 - 36,30,22,20,18,16 */
+h1 { font-size: 2.5714em; /* 36px */ margin-top: 0.6111em; margin-bottom: 0; }
+h2 { font-size: 2.1429em; /* 30px */ margin-top: 0.7333em; margin-bottom: 0; }
+h3 { font-size: 1.5714em; /* 22px */ margin-top: 1.0000em; margin-bottom: 0; }
+h4 { font-size: 1.4286em; /* 20px */ margin-top: 1.1000em; margin-bottom: 0; }
+h5 { font-size: 1.2857em; /* 18px */ margin-top: 1.2222em; margin-bottom: 0; }
+h6 { font-size: 1.1429em; /* 16px */ margin-top: 1.3750em; margin-bottom: 0; }
+p, ul, ol, table, pre, dl { font-size: 1em; /* 14px */ line-height: 1.5714em; /* 22px */ margin: 0 0 20px; }
+
+a {
+    color: #39c;
+    font-weight: 400;
+    text-decoration: none;
+
+    small {
+        font-size: 11px;
+        color: #777;
+        margin-top: -0.6em;
+        display: block;
+    }
+}
+
+blockquote {
+    border-left: 1px solid #e5e5e5;
+    margin: 0;
+    padding: 0 0 0 20px;
+    font-style: italic;
+}
+
+strong {
+    color: #222;
+    font-weight: 700;
+}
+
+small {
+    font-size: 0.8em;
+    color:#777;
+}
+
+hr {
+    border: 0;
+    background: #e5e5e5;
+    height: 1px;
+    margin: 0 0 20px;
+}
+
+section > h2 {
+    margin-top:0;
+}
