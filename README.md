@@ -1,5 +1,4 @@
 # Deployer
-### A Laravel 4 and standalone deployment system
 
 [![Build Status](http://img.shields.io/travis/onigoetz/deployer.svg?style=flat)](https://travis-ci.org/onigoetz/deployer)
 [![Latest Stable Version](http://img.shields.io/packagist/v/onigoetz/deployer.svg?style=flat)](https://packagist.org/packages/onigoetz/deployer)
@@ -7,30 +6,29 @@
 [![Scrutinizer Quality Score](http://img.shields.io/scrutinizer/g/onigoetz/deployer.svg?style=flat)](https://scrutinizer-ci.com/g/onigoetz/deployer/)
 [![Code Coverage](http://img.shields.io/scrutinizer/coverage/g/onigoetz/deployer.svg?style=flat)](https://scrutinizer-ci.com/g/onigoetz/deployer/)
 
+### Easily deploy your applications
 
 
 Deployer is a tool that helps to deploy projects of any type to a server with minimal requirements.
 
-Requirements :
+Requirements on the server side:
 
-* SSH Connection to the server
+* SSH Access to the server
 * PHP if you want to use composer
 
-The library is a work in progress and could do a lot more things but for the moment it does what I need it to.
+The library works perfectly and is used in production for a few years now. It is still marked as beta as there are some things I still want to improve.
 
-## Why this new library ?
+## What does it do better than others ?
 
 There are so much tools to deploy an application to one or many servers, the problem is that they're hard to configure and / or they need to install software on the destination server.
 
-I wanted my servers to stay as clean as possible. So I went up with this little tool.
+This tool has two advantages:
+- Nothing needs to be installed on the destination
+- Very simple configuration
 
 Deploying is as simple as :
 
 	./deploy server:deploy production
-
-Or to be clearer :
-
-	./deploy [command] [environment]
 
 ## Commands
 
@@ -46,58 +44,52 @@ You can install the library through [composer](http://getcomposer.org). All you 
 ```json
 {
     "require-dev": {
-        "onigoetz/deployer": "1.0.0-beta1"
+        "onigoetz/deployer": "1.0.0-beta2"
     }
 }
 ```
 
-## Configuration
+## Quick Start
 
-There are two ways to configure the deployer, in both cases, the idea is that an array holds the complete configuration,
-it's easier to maintain an use than a lot of different configuration classes.
+> The full documentation is available at
+>
+> [http://onigoetz.ch/deployer/]()
 
-The syntax is explained [here](https://github.com/onigoetz/deployer/wiki/Options)
+
 
 ### In Laravel 4
 
 Add the following lines to your application in `config/local/app.php`
 
 ```php
-
     'providers' => append_config(
         ['Onigoetz\Deployer\DeployServiceProvider']
     ),
-
 ```
 
-Then create a config file named `deploy.php` in `app/config`
-```php
-<?php
+With that part configured you can run `./artisan config:publish onigoetz/deployer`
 
-return array(
-    ...
-);
-```
+this will copy the default configurations to `config/packages/onigoetz/deployer`
+You can find the details of each file in the [Configuration section](#configuration-options)
 
 Then you can run `./artisan server:deploy production` to deploy
 
 ### Standalone launcher
 
-This time the configuration is done in the executable script.
+This time the configuration is made in a folder called `.deployer`
 
-Create a file named `deploy` (actually you can name it the way you want)
-```php
-#!/usr/bin/env php
-<?php
+to do this, add deployer to your composer dependencies and do
 
-$config = array(
-    ...
-);
-
-include 'vendor/autoload.php';
-\Deployer\Init::run($config);
+```bash
+cp vendor/onigoetz/deployer/src/config .deployer
 ```
+You can now configure your infrastructure.
 
-Chmod the file to executable
+Then you can run `vendor/bin/deployer server:deploy production` to deploy
 
-Then you can run `./deploy server:deploy production` to deploy
+## Roadmap
+
+The ideas I have partly implemented or that I want to implement
+
+- Connect to servers with SSH Keys instead of the usual username:password combo
+- Create a zip locally and upload it to the server. (instead of a zip clone)
