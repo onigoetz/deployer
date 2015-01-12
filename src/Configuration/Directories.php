@@ -48,14 +48,9 @@ class Directories extends InheritingConfigurationContainer
     /**
      * {@inheritdoc}
      */
-    public function isValid()
+    public function checkValidity()
     {
-        try {
-            $this->getRoot();
-        } catch (\LogicException $e) {
-            $this->manager->log($e->getMessage());
-            return false;
-        }
+        $this->getRoot();
 
         return true;
     }

@@ -78,14 +78,9 @@ class Source extends ExtendableConfigurationContainer
     /**
      * {@inheritdoc}
      */
-    public function isValid()
+    public function checkValidity()
     {
-        try {
-            $this->getPath();
-        } catch (\LogicException $e) {
-            $this->manager->log($e->getMessage());
-            return false;
-        }
+        $this->getPath();
 
         return true;
     }

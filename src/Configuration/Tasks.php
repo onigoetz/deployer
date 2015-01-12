@@ -11,7 +11,7 @@ class Tasks extends ConfigurationContainer
         return $this->data;
     }
 
-    public function isValid()
+    public function checkValidity()
     {
         //TODO :: validate
         return true;

@@ -81,5 +81,20 @@ abstract class ConfigurationContainer
      *
      * @return bool
      */
-    abstract public function isValid();
+    public function isValid() {
+        try {
+            return $this->checkValidity();
+        } catch (\LogicException $e) {
+            $this->manager->log($e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Internal validity check
+     *
+     * @return boolean
+     * @throws \LogicException
+     */
+    abstract public function checkValidity();
 }

@@ -26,15 +26,10 @@ class Server extends ConfigurationContainer
     /**
      * {@inheritdoc}
      */
-    public function isValid()
+    public function checkValidity()
     {
-        try {
-            $this->getHost();
-            $this->getUsername();
-        } catch (\LogicException $e) {
-            $this->manager->log($e->getMessage());
-            return false;
-        }
+        $this->getHost();
+        $this->getUsername();
 
         return true;
     }

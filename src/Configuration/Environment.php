@@ -85,28 +85,26 @@ class Environment extends ConfigurationContainer
         return $actions;
     }
 
-    public function isValid()
+    /**
+     * {@inheritdoc}
+     */
+    public function checkValidity()
     {
-        try {
-            if (!$this->getSource()->isValid()) {
-                return false;
-            }
-
-            if (!$this->getDirectories()->isValid()) {
-                return false;
-            }
-
-            /**
-             * @var $server Server
-             */
-            foreach ($this->getServers() as $server) {
-                if (!$server->isValid()) {
-                    return false;
-                }
-            }
-        } catch (\LogicException $e) {
-            $this->manager->log($e->getMessage());
+        if (!$this->getSource()->isValid()) {
             return false;
+        }
+
+        if (!$this->getDirectories()->isValid()) {
+            return false;
+        }
+
+        /**
+         * @var $server Server
+         */
+        foreach ($this->getServers() as $server) {
+            if (!$server->isValid()) {
+                return false;
+            }
         }
 
         return true;
