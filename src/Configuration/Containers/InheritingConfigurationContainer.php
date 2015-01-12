@@ -50,14 +50,10 @@ abstract class InheritingConfigurationContainer extends ConfigurationContainer
      */
     protected function getValueOrDefault($key, $default)
     {
-        if (array_key_exists($key, $this->data)) {
-            return $this->data[$key];
+        try {
+            return $this->getValueOrFail($key, "");
+        } catch (\LogicException $e) {
+            return $default;
         }
-
-        if ($this->parent) {
-            return $this->parent->getValueOrDefault($key, $default);
-        }
-
-        return $default;
     }
 }
