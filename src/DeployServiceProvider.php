@@ -16,6 +16,27 @@ class DeployServiceProvider extends ServiceProvider
      */
     protected $defer = true;
 
+
+    /**
+     * {@inheritdoc}
+     */
+    public function boot()
+    {
+        $files = ["directories", "environments", "servers", "sources", "tasks"];
+
+        $configPath = __DIR__ . '/config/';
+        $publishes = [];
+        foreach ($files as $file) {
+            $publishes["$configPath/$file.php"] = config_path("deployer/$file.php");
+        }
+
+        $this->publishes($publishes);
+
+        foreach ($files as $file) {
+            $this->mergeConfigFrom("$configPath/$file.php", "deployer.$file");
+        }
+    }
+
     /**
      * Register the service provider.
      *
@@ -23,16 +44,14 @@ class DeployServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app['config']->package('onigoetz/deployer', __DIR__ . '/config');
-
         $this->app['deployer.configuration'] = $this->app->share(
             function ($app) {
                 $configuration = [
-                    'directories' => $app['config']['deployer::directories'],
-                    'servers' => $app['config']['deployer::servers'],
-                    'sources' => $app['config']['deployer::sources'],
-                    'tasks' => $app['config']['deployer::tasks'],
-                    'environments' => $app['config']['deployer::environments'],
+                    'directories' => $app['config']['deployer.directories'],
+                    'servers' => $app['config']['deployer.servers'],
+                    'sources' => $app['config']['deployer.sources'],
+                    'tasks' => $app['config']['deployer.tasks'],
+                    'environments' => $app['config']['deployer.environments'],
                 ];
 
                 return ConfigurationManager::create($configuration);
