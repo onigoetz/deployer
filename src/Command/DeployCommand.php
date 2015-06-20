@@ -53,7 +53,13 @@ class DeployCommand extends BaseCommand
 
         $runner = new RemoteActionRunner($output, $ssh);
 
-        $runner->setupServer($destination_dir);
+        $this->runAction(
+            "Create folders on server",
+            $output,
+            function () use ($runner, $destination_dir) {
+                $runner->setupServer($destination_dir);
+            }
+        );
 
         if ($environment->getSource() instanceof Cloned) {
             $class = 'Onigoetz\\Deployer\\SCM\\' . ucfirst($environment->getSource()->getType());
@@ -66,39 +72,49 @@ class DeployCommand extends BaseCommand
              */
             $scm = new $class($environment);
 
-            $output->writeln('<info>Cloning ...</info>');
             $final = $environment->getSource()->getFinalUrl($this->getHelper('dialog'), $output);
 
-            $git = $scm->getCommand($ssh);
-
-            $result = $runner->exec($scm->cloneCommand($git, $final, $destination));
-            $output->writeln('<info>' . $result . '</info>');
+            $this->runAction(
+                "Clone the latest version",
+                $output,
+                function () use ($scm, $ssh, $runner, $final, $destination) {
+                    $git = $scm->getCommand($ssh);
+                    return $runner->exec($scm->cloneCommand($git, $final, $destination));
+                }
+            );
         }
 
         $dirs = $environment->getDirectories();
 
-        /*
-         * Before Deploy Section
-         */
-        $output->writeln('Before deploy actions');
+        $output->writeln("<fg=blue;options=bold>Before deployment actions</fg=blue;options=bold>");
         $this->runActions($runner, $environment->getTasks('before'), $output, $dirs->getSubstitutions($destination));
 
-        $previous = $runner->getSymlinkDestination($environment->getDirectories()->getDeploy());
 
-        if ($previous != '') {
-            $output->writeln("Previous snapshot : $previous");
-            $ssh->put($dirs->getRoot() . '/previous', $previous);
-        }
+        $output->writeln("<fg=blue;options=bold>Deployment</fg=blue;options=bold>");
+        $this->runAction(
+            "Store the current deployment for eventual rollback",
+            $output,
+            function () use ($runner, $environment, $ssh, $dirs) {
+                $previous = $runner->getSymlinkDestination($environment->getDirectories()->getDeploy());
+                $ssh->put($dirs->getRoot() . '/previous', $previous);
 
-        $deploy = $dirs->getDeploy();
+                return "Previous snapshot : $previous";
+            }
+        );
 
-        //Symlink the folder
-        $output->writeln('Deploy');
-        $output->writeln('<info>' . $runner->rmfile($deploy) . '</info>');
-        $output->writeln('<info>' . $runner->symlink($destination, $deploy) . '</info>');
+        $this->runAction(
+            "Symlink the new deployment",
+            $output,
+            function () use ($dirs, $runner, $destination) {
+                $deploy = $dirs->getDeploy();
 
-        //After deploy
-        $output->writeln('After deploy actions');
+                $runner->rmfile($deploy);
+                $runner->symlink($destination, $deploy);
+            }
+        );
+
+        $output->writeln("");
+        $output->writeln("<fg=blue;options=bold>After deployment actions</fg=blue;options=bold>");
         $this->runActions($runner, $environment->getTasks('after'), $output, $dirs->getSubstitutions($destination));
 
         $output->writeln('Done');

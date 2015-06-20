@@ -20,37 +20,62 @@ class BaseCommand extends Command
         $this->manager = $manager;
     }
 
-    protected function prepareDir($dir, array $directories)
+    protected function prefixPath($path, array $directories)
     {
-        $dir = strtr($dir, $directories);
-
-        if (strpos($dir, '/') !== 0) {
-            $dir = $directories['{{root}}'] . '/' . $dir;
+        if (strpos($path, '/') === 0) {
+            return $path;
         }
 
-        return $dir;
+        return $directories['{{root}}'] . '/' . $path;
+    }
+
+    protected function replaceVars($dir, array $directories)
+    {
+        return strtr($dir, $directories);
     }
 
     protected function runActions(RemoteActionRunner $runner, $actions, OutputInterface $output, $directories)
     {
         foreach ($actions as $description => $action) {
-            $output->writeln($description);
-            $this->runAction($runner, $action, $output, $directories);
+            $this->runAction(
+                $description,
+                $output,
+                function () use ($runner, $action, $directories) {
+                    $method = $action['action'];
+                    unset($action['action']);
+
+                    $parameters = [];
+                    foreach ($action as $key => $value) {
+                        $parameters[$key] = $this->replaceVars($value, $directories);
+
+                        if ($method != 'exec') {
+                            $parameters[$key] = $this->prefixPath($parameters[$key], $directories);
+                        }
+                    }
+
+                    return (new MethodCaller)->call($runner, $method, $parameters);
+                }
+            );
         }
     }
 
-    protected function runAction(RemoteActionRunner $runner, $action, OutputInterface $output, $directories)
+    protected function runAction($title, OutputInterface $output, \Closure $closure)
     {
-        $method = $action['action'];
-        unset($action['action']);
+        $output->write($title);
+        // 8 is the length of the label + 2 let it breathe
+        $padding = $this->getApplication()->getTerminalDimensions()[0] - strlen($title) - 10;
 
-        $parameters= [];
-        foreach ($action as $key => $value) {
-            $parameters[$key] = $this->prepareDir($value, $directories);
+        try {
+            $response = $closure();
+        } catch (\Exception $e) {
+            $output->writeln(str_pad(" ", $padding) . "[ <fg=red>FAIL</fg=red> ]");
+            throw $e;
         }
 
-        $response = (new MethodCaller)->call($runner, $method, $parameters);
-        $output->writeln('<fg=green>' . $response . '</fg=green>');
+        $output->writeln(str_pad(" ", $padding) . "[  <fg=green>OK</fg=green>  ]");
+        if (!empty($response)) {
+            $output->writeln('<fg=blue>' . $response . '</fg=blue>');
+        }
     }
 
     protected function allServers(Environment $environment, OutputInterface $output, \Closure $action)
