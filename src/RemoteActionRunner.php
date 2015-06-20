@@ -29,7 +29,14 @@ class RemoteActionRunner
         if (VERBOSE) {
             $this->output->writeln("<bg=blue;options=bold>  -> $command </bg=blue;options=bold>");
         }
-        return $this->ssh->exec($command);
+
+        $result = $this->ssh->exec($command);
+
+        if ($status = $this->ssh->getExitStatus()) {
+            throw new RemoteException("Command '$command' Failed with status '$status': $result");
+        }
+
+        return $result;
     }
 
     public function symlink($target, $link_name)
@@ -107,17 +114,12 @@ class RemoteActionRunner
 
     public function setupServer($destination_dir)
     {
-        $this->output->writeln('Does the snapshots directory exist ?', 'blue');
-
         if (!$this->isDir($destination_dir)) {
-            $this->output->writeln('<info> CREATING </info>');
-
             $this->exec('mkdir -p "' . $destination_dir . '"');
 
             if (!$this->isDir($destination_dir)) {
                 throw new \Exception("Cannot create directory '$destination_dir'");
             }
         }
-        $this->output->writeln('<info> OK </info>');
     }
 }
