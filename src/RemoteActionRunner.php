@@ -24,10 +24,14 @@ class RemoteActionRunner
         $this->ssh = $ssh;
     }
 
-    public function exec($command)
+    public function exec($command, $cwd = null)
     {
         if (VERBOSE) {
             $this->output->writeln("<bg=blue;options=bold>  -> $command </bg=blue;options=bold>");
+        }
+
+        if ($cwd) {
+            $command = "cd \"$cwd\" && $command";
         }
 
         $result = $this->ssh->exec($command);
