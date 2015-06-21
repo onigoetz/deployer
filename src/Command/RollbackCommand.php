@@ -38,26 +38,25 @@ class RollbackCommand extends BaseCommand
 
     protected function rollback(OutputInterface $output, Net_SFTP $ssh, Environment $environment)
     {
-        $dirs = $environment->getDirectories();
         $runner = new RemoteActionRunner($output, $ssh);
 
-        $previous = trim($ssh->exec('cat ' . $dirs->getRoot() . '/previous'));
+        $previous = trim($ssh->exec('cat ' . $environment->getDirectories()->getRoot() . '/previous'));
         if ($previous != '') {
             $actions = [
                 'Removing the symlink of the release to rollback' => [
                     'action' => 'rmfile',
-                    'file' => $dirs->getDeploy()
+                    'file' => $environment->getDirectories()->getDeploy()
                 ],
                 'Link it again to the snapshot ' . $previous => [
                     'action' => 'symlink',
                     'target' => $previous,
-                    'link_name' => $dirs->getDeploy()
+                    'link_name' => $environment->getDirectories()->getDeploy()
                 ]
             ];
 
             $output->writeln('Previous snapshot : ' . $previous);
             $output->writeln("Reverting...\n", 'blue');
-            $this->runActions($runner, $actions, $output, $dirs->getSubstitutions($previous));
+            $this->runActions($runner, $actions, $output, $environment->getSubstitutions($previous));
             $output->writeln("Done\n");
         } else {
             $output->writeln('<error>Cannot find previous file !!!</error>');

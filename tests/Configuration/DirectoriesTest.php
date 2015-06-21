@@ -178,21 +178,4 @@ class DirectoriesTest extends PHPUnit_Framework_TestCase
 
         $this->assertFalse($directories->isValid());
     }
-
-    public function testGetSubstitutions()
-    {
-        $data = array('root' => '/var/www');
-        $directories = new Directories('default', $data, $this->getManager());
-
-        $binary = $directories->getNewBinaryName();
-
-        $final = [
-            '{{root}}' => $directories->getRoot(),
-            '{{binaries}}' => $directories->getBinaries(),
-            '{{binary}}' => $binary,
-            '{{deploy}}' => $directories->getDeploy(),
-        ];
-
-        $this->assertEquals($final, $directories->getSubstitutions($binary));
-    }
 }

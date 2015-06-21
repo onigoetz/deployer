@@ -159,6 +159,30 @@ class EnvironmentTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($data['binary_name'], $environment->getDirectories()->getBinaryName());
     }
 
+    public function testGetSubstitutions()
+    {
+        $mgr = $this->getManager();
+
+
+        $env = 'production';
+        $environment = new Environment($env, [], $mgr);
+        $data = array('root' => '/var/www');
+        $directories = new Directories('default', $data, $mgr);
+        $mgr->setDefaultDirectories($directories);
+
+        $binary = $directories->getNewBinaryName();
+
+        $final = [
+            '{{environment}}' => $env,
+            '{{root}}' => $directories->getRoot(),
+            '{{binaries}}' => $directories->getBinaries(),
+            '{{binary}}' => $binary,
+            '{{deploy}}' => $directories->getDeploy(),
+        ];
+
+        $this->assertEquals($final, $environment->getSubstitutions($binary));
+    }
+
     public function testGetOverridenSource()
     {
         $mgr = $this->getManager();

@@ -84,19 +84,17 @@ class DeployCommand extends BaseCommand
             );
         }
 
-        $dirs = $environment->getDirectories();
-
         $output->writeln("<fg=blue;options=bold>Before deployment actions</fg=blue;options=bold>");
-        $this->runActions($runner, $environment->getTasks('before'), $output, $dirs->getSubstitutions($destination));
+        $this->runActions($runner, $environment->getTasks('before'), $output, $environment->getSubstitutions($destination));
 
 
         $output->writeln("<fg=blue;options=bold>Deployment</fg=blue;options=bold>");
         $this->runAction(
             "Store the current deployment for eventual rollback",
             $output,
-            function () use ($runner, $environment, $ssh, $dirs) {
+            function () use ($runner, $environment, $ssh) {
                 $previous = $runner->getSymlinkDestination($environment->getDirectories()->getDeploy());
-                $ssh->put($dirs->getRoot() . '/previous', $previous);
+                $ssh->put($environment->getDirectories()->getRoot() . '/previous', $previous);
 
                 return "Previous snapshot : $previous";
             }
@@ -105,8 +103,8 @@ class DeployCommand extends BaseCommand
         $this->runAction(
             "Symlink the new deployment",
             $output,
-            function () use ($dirs, $runner, $destination) {
-                $deploy = $dirs->getDeploy();
+            function () use ($environment, $runner, $destination) {
+                $deploy = $environment->getDirectories()->getDeploy();
 
                 $runner->rmfile($deploy);
                 $runner->symlink($destination, $deploy);
@@ -115,7 +113,7 @@ class DeployCommand extends BaseCommand
 
         $output->writeln("");
         $output->writeln("<fg=blue;options=bold>After deployment actions</fg=blue;options=bold>");
-        $this->runActions($runner, $environment->getTasks('after'), $output, $dirs->getSubstitutions($destination));
+        $this->runActions($runner, $environment->getTasks('after'), $output, $environment->getSubstitutions($destination));
 
         $output->writeln('Done');
     }

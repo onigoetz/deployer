@@ -109,4 +109,15 @@ class Environment extends ConfigurationContainer
 
         return true;
     }
+
+    public function getSubstitutions($binary)
+    {
+        return [
+            '{{root}}' => $this->getDirectories()->getRoot(),
+            '{{binaries}}' => $this->getDirectories()->getBinaries(),
+            '{{binary}}' => $binary,
+            '{{deploy}}' => $this->getDirectories()->getDeploy(),
+            '{{environment}}' => $this->name,
+        ];
+    }
 }
