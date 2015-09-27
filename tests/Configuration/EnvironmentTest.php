@@ -208,7 +208,7 @@ class EnvironmentTest extends PHPUnit_Framework_TestCase
 
     public function testExampleConfiguration()
     {
-        $config_folder = dirname(dirname(__DIR__)).'/src/config';
+        $config_folder = dirname(dirname(__DIR__)) . '/src/config';
 
         $configuration = [
             'directories' => include "$config_folder/directories.php",
