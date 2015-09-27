@@ -2,7 +2,6 @@
 
 use Onigoetz\Deployer\Configuration\ConfigurationManager;
 use Onigoetz\Deployer\Configuration\Source;
-use Onigoetz\Deployer\Configuration\Sources\Cloned;
 use Onigoetz\Deployer\Configuration\Sources\Upload;
 
 class SourceUploadTest extends PHPUnit_Framework_TestCase
@@ -14,7 +13,7 @@ class SourceUploadTest extends PHPUnit_Framework_TestCase
 
     public function testGetInclude()
     {
-        $data = array('strategy' => 'upload', 'path' => '/the/path', 'include' => array('app'));
+        $data = ['strategy' => 'upload', 'path' => '/the/path', 'include' => ['app']];
 
         $source = Source::make('noname', $data, $this->getManager());
 
@@ -23,7 +22,7 @@ class SourceUploadTest extends PHPUnit_Framework_TestCase
 
     public function testGetDefaultType()
     {
-        $data = array('strategy' => 'upload', 'path' => '/the/path');
+        $data = ['strategy' => 'upload', 'path' => '/the/path'];
 
         $source = Source::make('noname', $data, $this->getManager());
 
@@ -32,7 +31,7 @@ class SourceUploadTest extends PHPUnit_Framework_TestCase
 
     public function testGetSubmodules()
     {
-        $data = array('strategy' => 'upload', 'path' => '/the/path', 'exclude' => array('app/storage'));
+        $data = ['strategy' => 'upload', 'path' => '/the/path', 'exclude' => ['app/storage']];
 
         $source = Source::make('noname', $data, $this->getManager());
 
@@ -41,7 +40,7 @@ class SourceUploadTest extends PHPUnit_Framework_TestCase
 
     public function testGetDefaultSubmodules()
     {
-        $data = array('strategy' => 'upload', 'path' => '/the/path');
+        $data = ['strategy' => 'upload', 'path' => '/the/path'];
 
         $source = Source::make('noname', $data, $this->getManager());
 

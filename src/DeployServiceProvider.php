@@ -16,13 +16,12 @@ class DeployServiceProvider extends ServiceProvider
      */
     protected $defer = true;
 
-
     /**
      * {@inheritdoc}
      */
     public function boot()
     {
-        $files = ["directories", "environments", "servers", "sources", "tasks"];
+        $files = ['directories', 'environments', 'servers', 'sources', 'tasks'];
 
         $configPath = __DIR__ . '/config/';
         $publishes = [];

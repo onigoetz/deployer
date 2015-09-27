@@ -7,7 +7,7 @@ return [
         'overrides' => [
             'source' => ['branch' => 'master'],
         ],
-        'tasks' => ['before' => ['before_actions']]
+        'tasks' => ['before' => ['before_actions']],
     ],
     'dev' => [
         'source' => 'cloned_dev',
@@ -16,6 +16,6 @@ return [
             'source' => ['branch' => 'develop'],
             'directories' => ['root' => '/home/youmewine/domains/dev.youmewine.com/www/'],
         ],
-        'tasks' => ['before' => ['before_actions'], 'after' => ['after_actions']]
+        'tasks' => ['before' => ['before_actions'], 'after' => ['after_actions']],
     ],
 ];

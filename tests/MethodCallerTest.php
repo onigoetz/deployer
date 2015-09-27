@@ -10,7 +10,7 @@ class MethodCallerTest extends PHPUnit_Framework_TestCase
         m::close();
     }
 
-    function testCallReorderArgs()
+    public function testCallReorderArgs()
     {
         $config = ['height' => 100, 'width' => 200];
 
@@ -23,12 +23,12 @@ class MethodCallerTest extends PHPUnit_Framework_TestCase
     /**
      * @expectedException \LogicException
      */
-    function testCallMethodDoesntExist()
+    public function testCallMethodDoesntExist()
     {
         (new MethodCaller)->call(new MethodCallerTestClass, 'foo', []);
     }
 
-    function testCallFindsDefaultArgs()
+    public function testCallFindsDefaultArgs()
     {
         $config = ['one' => 90];
 
@@ -39,9 +39,8 @@ class MethodCallerTest extends PHPUnit_Framework_TestCase
     }
 }
 
-
-class MethodCallerTestClass {
-
+class MethodCallerTestClass
+{
     public function test($width, $height)
     {
     }

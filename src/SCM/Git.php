@@ -6,7 +6,7 @@ class Git extends SCM
 {
     public function getCommand(\Net_SFTP $ssh)
     {
-        $git_command = str_replace("\n", "", $ssh->exec('which git'));
+        $git_command = str_replace("\n", '', $ssh->exec('which git'));
         if ($git_command == '') {
             throw new \Exception('the git command wasn\'t found on this server');
         }

@@ -7,7 +7,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class RemoteActionRunner
 {
-
     /**
      * @var \Symfony\Component\Console\Output\OutputInterface
      */
@@ -61,7 +60,7 @@ class RemoteActionRunner
     protected function getComposerCommand($dir)
     {
         //is composer installed on the system ?
-        $composer_command = str_replace("\n", "", $this->ssh->exec('which composer'));
+        $composer_command = str_replace("\n", '', $this->ssh->exec('which composer'));
         if ($composer_command != '') {
             return $composer_command;
         }
@@ -92,7 +91,7 @@ class RemoteActionRunner
      * Tests if a directory exists
      *
      * @param string $dir
-     * @return boolean
+     * @return bool
      */
     public function isDir($dir)
     {

@@ -12,7 +12,7 @@ class TasksTest extends PHPUnit_Framework_TestCase
 
     public function testGetTasks()
     {
-        $data = array('prune' => array('action' => 'prune'));
+        $data = ['prune' => ['action' => 'prune']];
 
         $task = new Tasks('prune', $data, $this->getManager());
 
@@ -21,11 +21,10 @@ class TasksTest extends PHPUnit_Framework_TestCase
 
     public function testIsValid()
     {
-        $data = array('prune' => array('action' => 'prune'));
+        $data = ['prune' => ['action' => 'prune']];
 
         $task = new Tasks('prune', $data, $this->getManager());
 
         $this->assertTrue($task->isValid());
     }
-
 }

@@ -12,7 +12,7 @@ class Directories extends InheritingConfigurationContainer
 
     public function getRoot()
     {
-        return $this->getValueOrFail('root', "no root directory specified");
+        return $this->getValueOrFail('root', 'no root directory specified');
     }
 
     public function getBinaries()
