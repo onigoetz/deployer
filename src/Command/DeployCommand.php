@@ -54,7 +54,7 @@ class DeployCommand extends BaseCommand
         $runner = new RemoteActionRunner($output, $ssh);
 
         $this->runAction(
-            "Create folders on server",
+            'Create folders on server',
             $output,
             function () use ($runner, $destination_dir) {
                 $runner->setupServer($destination_dir);
@@ -68,29 +68,29 @@ class DeployCommand extends BaseCommand
             }
 
             /**
-             * @var $scm \Onigoetz\Deployer\SCM\SCM
+             * @var \Onigoetz\Deployer\SCM\SCM
              */
             $scm = new $class($environment);
 
             $final = $environment->getSource()->getFinalUrl($this->getHelper('dialog'), $output);
 
             $this->runAction(
-                "Clone the latest version",
+                'Clone the latest version',
                 $output,
                 function () use ($scm, $ssh, $runner, $final, $destination) {
                     $git = $scm->getCommand($ssh);
+
                     return $runner->exec($scm->cloneCommand($git, $final, $destination));
                 }
             );
         }
 
-        $output->writeln("<fg=blue;options=bold>Before deployment actions</fg=blue;options=bold>");
+        $output->writeln('<fg=blue;options=bold>Before deployment actions</fg=blue;options=bold>');
         $this->runActions($runner, $environment->getTasks('before'), $output, $environment->getSubstitutions($destination));
 
-
-        $output->writeln("<fg=blue;options=bold>Deployment</fg=blue;options=bold>");
+        $output->writeln('<fg=blue;options=bold>Deployment</fg=blue;options=bold>');
         $this->runAction(
-            "Store the current deployment for eventual rollback",
+            'Store the current deployment for eventual rollback',
             $output,
             function () use ($runner, $environment, $ssh) {
                 $previous = $runner->getSymlinkDestination($environment->getDirectories()->getDeploy());
@@ -101,7 +101,7 @@ class DeployCommand extends BaseCommand
         );
 
         $this->runAction(
-            "Symlink the new deployment",
+            'Symlink the new deployment',
             $output,
             function () use ($environment, $runner, $destination) {
                 $deploy = $environment->getDirectories()->getDeploy();
@@ -111,8 +111,8 @@ class DeployCommand extends BaseCommand
             }
         );
 
-        $output->writeln("");
-        $output->writeln("<fg=blue;options=bold>After deployment actions</fg=blue;options=bold>");
+        $output->writeln('');
+        $output->writeln('<fg=blue;options=bold>After deployment actions</fg=blue;options=bold>');
         $this->runActions($runner, $environment->getTasks('after'), $output, $environment->getSubstitutions($destination));
 
         $output->writeln('Done');

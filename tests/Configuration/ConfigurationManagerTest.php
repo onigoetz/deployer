@@ -6,12 +6,11 @@ use Onigoetz\Deployer\Configuration\Server;
 
 class ConfigurationManagerTest extends PHPUnit_Framework_TestCase
 {
-
     public function testGetDirectories()
     {
         $manager = new ConfigurationManager();
 
-        $directories = new Directories('default', array(), $manager);
+        $directories = new Directories('default', [], $manager);
         $manager->setDefaultDirectories($directories);
 
         $this->assertSame($directories, $manager->getDefaultDirectories());
@@ -19,13 +18,13 @@ class ConfigurationManagerTest extends PHPUnit_Framework_TestCase
 
     public function testCreate()
     {
-        $data = array(
-            'directories' => array('root' => '/var/www'),
-            'sources' => array('cloned' => array('strategy' => 'clone', 'path' => 'http://github.com')),
-            'servers' => array('localhost' => array('host' => '127.0.0.1', 'username' => 'root')),
-            'environments' => array('prod' => array('source' => 'cloned', 'servers' => array('localhost'))),
-            'tasks' => array('before' => array(array('action' => 'prune'))),
-        );
+        $data = [
+            'directories' => ['root' => '/var/www'],
+            'sources' => ['cloned' => ['strategy' => 'clone', 'path' => 'http://github.com']],
+            'servers' => ['localhost' => ['host' => '127.0.0.1', 'username' => 'root']],
+            'environments' => ['prod' => ['source' => 'cloned', 'servers' => ['localhost']]],
+            'tasks' => ['before' => [['action' => 'prune']]],
+        ];
 
         $manager = ConfigurationManager::create($data);
 
@@ -40,11 +39,11 @@ class ConfigurationManagerTest extends PHPUnit_Framework_TestCase
 
     public function testGetTasks()
     {
-        $data = array(
-            'environments' => array('prod' => array('tasks' => array('before' => ['do_before']))),
-            'tasks' => array('do_before' => array(array('action' => 'prune'))),
-        );
-        $data += array( 'directories' => array('root' => '/var/www'),'sources' => array(), 'servers' => array(),);
+        $data = [
+            'environments' => ['prod' => ['tasks' => ['before' => ['do_before']]]],
+            'tasks' => ['do_before' => [['action' => 'prune']]],
+        ];
+        $data += ['directories' => ['root' => '/var/www'],'sources' => [], 'servers' => []];
 
         $manager = ConfigurationManager::create($data);
 
@@ -55,11 +54,11 @@ class ConfigurationManagerTest extends PHPUnit_Framework_TestCase
 
     public function testGetNamedTasks()
     {
-        $data = array(
-            'environments' => array('prod' => array('tasks' => array('before' => ['do_before']))),
-            'tasks' => array('do_before' => array('Do Pruning' => array('action' => 'prune'))),
-        );
-        $data += array( 'directories' => array('root' => '/var/www'),'sources' => array(), 'servers' => array(),);
+        $data = [
+            'environments' => ['prod' => ['tasks' => ['before' => ['do_before']]]],
+            'tasks' => ['do_before' => ['Do Pruning' => ['action' => 'prune']]],
+        ];
+        $data += ['directories' => ['root' => '/var/www'],'sources' => [], 'servers' => []];
 
         $manager = ConfigurationManager::create($data);
 
@@ -70,31 +69,31 @@ class ConfigurationManagerTest extends PHPUnit_Framework_TestCase
 
     public function testNoEvents()
     {
-        $data = array(
-            'environments' => array('prod' => array('tasks')),
-            'tasks' => array(),
-        );
-        $data += array( 'directories' => array('root' => '/var/www'),'sources' => array(), 'servers' => array(),);
+        $data = [
+            'environments' => ['prod' => ['tasks']],
+            'tasks' => [],
+        ];
+        $data += ['directories' => ['root' => '/var/www'],'sources' => [], 'servers' => []];
 
         $manager = ConfigurationManager::create($data);
 
         $env = $manager->get('environment', 'prod');
 
-        $this->assertEquals(array(), $env->getTasks('before'));
+        $this->assertEquals([], $env->getTasks('before'));
     }
 
     public function testGetMultiEvents()
     {
-        $data = array(
-            'environments' => array('prod' => array('tasks' => array('before' => ['do_before', 'do_before2']))),
-            'tasks' => array(
-                'do_before' => array(array('action' => 'prune')),
-                'do_before2' => array(array('action' => 'symlink'))
-            ),
-        );
-        $data += array( 'directories' => array('root' => '/var/www'),'sources' => array(), 'servers' => array(),);
+        $data = [
+            'environments' => ['prod' => ['tasks' => ['before' => ['do_before', 'do_before2']]]],
+            'tasks' => [
+                'do_before' => [['action' => 'prune']],
+                'do_before2' => [['action' => 'symlink']],
+            ],
+        ];
+        $data += ['directories' => ['root' => '/var/www'],'sources' => [], 'servers' => []];
 
-        $final = array(array('action' => 'prune'), array('action' => 'symlink'));
+        $final = [['action' => 'prune'], ['action' => 'symlink']];
 
         $manager = ConfigurationManager::create($data);
 
@@ -107,9 +106,9 @@ class ConfigurationManagerTest extends PHPUnit_Framework_TestCase
     {
         $manager = new ConfigurationManager();
 
-        $server = new Server('localhost', array(), $manager);
+        $server = new Server('localhost', [], $manager);
         $server->isValid();
 
-        $this->assertEquals(array("no 'host' specified in server 'localhost'"), $manager->getLogs());
+        $this->assertEquals(["no 'host' specified in server 'localhost'"], $manager->getLogs());
     }
 }

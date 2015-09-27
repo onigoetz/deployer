@@ -39,8 +39,8 @@ class ConfigurationManager
      * @param string $type
      * @param string $key
      *
-     * @return ConfigurationContainer
      * @throws \LogicException
+     * @return ConfigurationContainer
      */
     public function get($type, $key)
     {

@@ -24,8 +24,8 @@ abstract class InheritingConfigurationContainer extends ConfigurationContainer
      *
      * @param $key
      * @param $error_message
-     * @return mixed
      * @throws \LogicException
+     * @return mixed
      */
     protected function getValueOrFail($key, $error_message)
     {
@@ -51,7 +51,7 @@ abstract class InheritingConfigurationContainer extends ConfigurationContainer
     protected function getValueOrDefault($key, $default)
     {
         try {
-            return $this->getValueOrFail($key, "");
+            return $this->getValueOrFail($key, '');
         } catch (\LogicException $e) {
             return $default;
         }

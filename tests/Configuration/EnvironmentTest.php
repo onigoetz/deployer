@@ -1,9 +1,9 @@
 <?php
 use Onigoetz\Deployer\Configuration\ConfigurationManager;
 use Onigoetz\Deployer\Configuration\Directories;
+use Onigoetz\Deployer\Configuration\Environment;
 use Onigoetz\Deployer\Configuration\Server;
 use Onigoetz\Deployer\Configuration\Source;
-use Onigoetz\Deployer\Configuration\Environment;
 
 class EnvironmentTest extends PHPUnit_Framework_TestCase
 {
@@ -11,7 +11,7 @@ class EnvironmentTest extends PHPUnit_Framework_TestCase
     {
         $manager = new ConfigurationManager();
 
-        $manager->setDefaultDirectories(new Directories('default', array('root' => '/var/www'), $manager));
+        $manager->setDefaultDirectories(new Directories('default', ['root' => '/var/www'], $manager));
 
         return $manager;
     }
@@ -19,13 +19,13 @@ class EnvironmentTest extends PHPUnit_Framework_TestCase
     public function testIsValid()
     {
         $mgr = $this->getManager();
-        $mgr->set(Source::make('the_source', array('strategy' => 'clone', 'path' => '/projects/app'), $mgr));
-        $mgr->set(new Server('localhost', array('host' => 'localhost', 'username' => 'root'), $mgr));
+        $mgr->set(Source::make('the_source', ['strategy' => 'clone', 'path' => '/projects/app'], $mgr));
+        $mgr->set(new Server('localhost', ['host' => 'localhost', 'username' => 'root'], $mgr));
 
-        $env = array(
+        $env = [
             'source' => 'the_source',
-            'servers' => array('localhost'),
-        );
+            'servers' => ['localhost'],
+        ];
 
         $environment = new Environment('production', $env, $mgr);
         $this->assertTrue($environment->isValid());
@@ -37,11 +37,11 @@ class EnvironmentTest extends PHPUnit_Framework_TestCase
     public function testNoSource()
     {
         $mgr = $this->getManager();
-        $mgr->set(new Server('localhost', array('host' => 'localhost', 'username' => 'root'), $mgr));
+        $mgr->set(new Server('localhost', ['host' => 'localhost', 'username' => 'root'], $mgr));
 
-        $env = array(
-            'servers' => array('localhost'),
-        );
+        $env = [
+            'servers' => ['localhost'],
+        ];
 
         $environment = new Environment('production', $env, $mgr);
         $this->assertFalse($environment->isValid());
@@ -56,29 +56,29 @@ class EnvironmentTest extends PHPUnit_Framework_TestCase
     {
         $mgr = $this->getManager();
 
-        $mgr->set(new Server('localhost', array('host' => 'localhost', 'username' => 'root'), $mgr));
+        $mgr->set(new Server('localhost', ['host' => 'localhost', 'username' => 'root'], $mgr));
 
-        $env = array(
+        $env = [
             'source' => 'the_source',
-            'servers' => array('localhost'),
-        );
+            'servers' => ['localhost'],
+        ];
 
         $environment = new Environment('production', $env, $mgr);
         $this->assertFalse($environment->isValid());
 
-       $environment->getSource();
+        $environment->getSource();
     }
 
     public function testInvalidSource()
     {
         $mgr = $this->getManager();
-        $mgr->set(Source::make('the_source', array('strategy' => 'clone'), $mgr));
-        $mgr->set(new Server('localhost', array('host' => 'localhost', 'username' => 'root'), $mgr));
+        $mgr->set(Source::make('the_source', ['strategy' => 'clone'], $mgr));
+        $mgr->set(new Server('localhost', ['host' => 'localhost', 'username' => 'root'], $mgr));
 
-        $env = array(
+        $env = [
             'source' => 'the_source',
-            'servers' => array('localhost'),
-        );
+            'servers' => ['localhost'],
+        ];
 
         $environment = new Environment('production', $env, $mgr);
         $this->assertFalse($environment->isValid());
@@ -87,14 +87,14 @@ class EnvironmentTest extends PHPUnit_Framework_TestCase
     public function testInvalidDirectories()
     {
         $mgr = new ConfigurationManager();
-        $mgr->setDefaultDirectories(new Directories('default', array(), $mgr));
-        $mgr->set(Source::make('the_source', array('strategy' => 'clone', 'path' => '/projects/app'), $mgr));
-        $mgr->set(new Server('localhost', array('host' => 'localhost', 'username' => 'root'), $mgr));
+        $mgr->setDefaultDirectories(new Directories('default', [], $mgr));
+        $mgr->set(Source::make('the_source', ['strategy' => 'clone', 'path' => '/projects/app'], $mgr));
+        $mgr->set(new Server('localhost', ['host' => 'localhost', 'username' => 'root'], $mgr));
 
-        $env = array(
+        $env = [
             'source' => 'the_source',
-            'servers' => array('localhost'),
-        );
+            'servers' => ['localhost'],
+        ];
 
         $environment = new Environment('production', $env, $mgr);
         $this->assertFalse($environment->isValid());
@@ -103,13 +103,13 @@ class EnvironmentTest extends PHPUnit_Framework_TestCase
     public function testInvalidServer()
     {
         $mgr = $this->getManager();
-        $mgr->set(Source::make('the_source', array('strategy' => 'clone', 'path' => '/projects/app'), $mgr));
-        $mgr->set(new Server('localhost', array('host' => 'localhost'), $mgr));
+        $mgr->set(Source::make('the_source', ['strategy' => 'clone', 'path' => '/projects/app'], $mgr));
+        $mgr->set(new Server('localhost', ['host' => 'localhost'], $mgr));
 
-        $env = array(
+        $env = [
             'source' => 'the_source',
-            'servers' => array('localhost'),
-        );
+            'servers' => ['localhost'],
+        ];
 
         $environment = new Environment('production', $env, $mgr);
         $this->assertFalse($environment->isValid());
@@ -118,15 +118,15 @@ class EnvironmentTest extends PHPUnit_Framework_TestCase
     public function testGetServerUsername()
     {
         $mgr = $this->getManager();
-        $mgr->set(Source::make('the_source', array('strategy' => 'clone', 'path' => '/projects/app'), $mgr));
+        $mgr->set(Source::make('the_source', ['strategy' => 'clone', 'path' => '/projects/app'], $mgr));
 
-        $data = array('host' => 'localhost', 'username' => 'root');
+        $data = ['host' => 'localhost', 'username' => 'root'];
         $mgr->set(new Server('localhost', $data, $mgr));
 
-        $env = array(
+        $env = [
             'source' => 'the_source',
-            'servers' => array('localhost'),
-        );
+            'servers' => ['localhost'],
+        ];
 
         $environment = new Environment('production', $env, $mgr);
 
@@ -138,21 +138,21 @@ class EnvironmentTest extends PHPUnit_Framework_TestCase
     public function testGetOverridenDirectories()
     {
         $mgr = $this->getManager();
-        $mgr->set(Source::make('the_source', array('strategy' => 'clone', 'path' => '/projects/app'), $mgr));
-        $mgr->set(new Server('localhost', array('host' => 'localhost', 'username' => 'root'), $mgr));
+        $mgr->set(Source::make('the_source', ['strategy' => 'clone', 'path' => '/projects/app'], $mgr));
+        $mgr->set(new Server('localhost', ['host' => 'localhost', 'username' => 'root'], $mgr));
 
-        $data = array(
+        $data = [
             'root' => '/root',
-            'binary_name' => 'yep'
-        );
+            'binary_name' => 'yep',
+        ];
 
-        $env = array(
+        $env = [
             'source' => 'the_source',
-            'servers' => array('localhost'),
-            'overrides' => array(
-                'directories' => $data
-            )
-        );
+            'servers' => ['localhost'],
+            'overrides' => [
+                'directories' => $data,
+            ],
+        ];
 
         $environment = new Environment('production', $env, $mgr);
         $this->assertEquals($data['root'], $environment->getDirectories()->getRoot());
@@ -163,10 +163,9 @@ class EnvironmentTest extends PHPUnit_Framework_TestCase
     {
         $mgr = $this->getManager();
 
-
         $env = 'production';
         $environment = new Environment($env, [], $mgr);
-        $data = array('root' => '/var/www');
+        $data = ['root' => '/var/www'];
         $directories = new Directories('default', $data, $mgr);
         $mgr->setDefaultDirectories($directories);
 
@@ -186,21 +185,21 @@ class EnvironmentTest extends PHPUnit_Framework_TestCase
     public function testGetOverridenSource()
     {
         $mgr = $this->getManager();
-        $mgr->set(Source::make('the_source', array('strategy' => 'clone', 'path' => '/projects/app'), $mgr));
-        $mgr->set(new Server('localhost', array('host' => 'localhost', 'username' => 'root'), $mgr));
+        $mgr->set(Source::make('the_source', ['strategy' => 'clone', 'path' => '/projects/app'], $mgr));
+        $mgr->set(new Server('localhost', ['host' => 'localhost', 'username' => 'root'], $mgr));
 
-        $data = array(
+        $data = [
             'path' => '/root',
-            'branch' => 'develop'
-        );
+            'branch' => 'develop',
+        ];
 
-        $env = array(
+        $env = [
             'source' => 'the_source',
-            'servers' => array('localhost'),
-            'overrides' => array(
-                'source' => $data
-            )
-        );
+            'servers' => ['localhost'],
+            'overrides' => [
+                'source' => $data,
+            ],
+        ];
 
         $environment = new Environment('production', $env, $mgr);
         $this->assertEquals($data['path'], $environment->getSource()->getPath());
@@ -211,13 +210,13 @@ class EnvironmentTest extends PHPUnit_Framework_TestCase
     {
         $config_folder = dirname(dirname(__DIR__)).'/src/config';
 
-        $configuration = array(
+        $configuration = [
             'directories' => include "$config_folder/directories.php",
             'servers' => include "$config_folder/servers.php",
-            'sources' =>include "$config_folder/sources.php",
+            'sources' => include "$config_folder/sources.php",
             'tasks' => include "$config_folder/tasks.php",
             'environments' => include "$config_folder/environments.php",
-        );
+        ];
 
         $manager = ConfigurationManager::create($configuration);
 

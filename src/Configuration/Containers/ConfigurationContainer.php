@@ -40,7 +40,7 @@ abstract class ConfigurationContainer
      */
     public function getContainerType()
     {
-        return strtolower(join('', array_slice(explode('\\', get_class($this)), -1)));
+        return strtolower(implode('', array_slice(explode('\\', get_class($this)), -1)));
     }
 
     /**
@@ -48,8 +48,8 @@ abstract class ConfigurationContainer
      *
      * @param string $key
      * @param $error_message
-     * @return mixed
      * @throws \LogicException
+     * @return mixed
      */
     protected function getValueOrFail($key, $error_message)
     {
@@ -81,11 +81,13 @@ abstract class ConfigurationContainer
      *
      * @return bool
      */
-    public function isValid() {
+    public function isValid()
+    {
         try {
             return $this->checkValidity();
         } catch (\LogicException $e) {
             $this->manager->log($e->getMessage());
+
             return false;
         }
     }
@@ -93,8 +95,8 @@ abstract class ConfigurationContainer
     /**
      * Internal validity check
      *
-     * @return boolean
      * @throws \LogicException
+     * @return bool
      */
     abstract public function checkValidity();
 }

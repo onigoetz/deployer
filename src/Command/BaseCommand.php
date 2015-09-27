@@ -68,11 +68,11 @@ class BaseCommand extends Command
         try {
             $response = $closure();
         } catch (\Exception $e) {
-            $output->writeln(str_pad(" ", $padding) . "[ <fg=red>FAIL</fg=red> ]");
+            $output->writeln(str_pad(' ', $padding) . '[ <fg=red>FAIL</fg=red> ]');
             throw $e;
         }
 
-        $output->writeln(str_pad(" ", $padding) . "[  <fg=green>OK</fg=green>  ]");
+        $output->writeln(str_pad(' ', $padding) . '[  <fg=green>OK</fg=green>  ]');
         if (!empty($response)) {
             $output->writeln('<fg=blue>' . $response . '</fg=blue>');
         }
@@ -82,7 +82,7 @@ class BaseCommand extends Command
     {
         //Loop on the servers
         /**
-         * @var $server \Onigoetz\Deployer\Configuration\Server
+         * @var \Onigoetz\Deployer\Configuration\Server
          */
         foreach ($environment->getServers() as $server) {
             $output->writeln("Deploying on <info>{$server->getHost()}</info>");
@@ -111,13 +111,13 @@ class BaseCommand extends Command
      *
      * @param $env
      * @param OutputInterface $output
-     * @return Environment
      * @throws \Exception
+     * @return Environment
      */
     protected function getEnvironment($env, OutputInterface $output)
     {
         try {
-            /**
+            /*
              * @var Environment
              */
             $environment = $this->manager->get('environment', $env);

@@ -50,7 +50,7 @@ class Cloned extends Source
 
     public function getFinalUrl(DialogHelper $dialog, OutputInterface $output)
     {
-        $regex = "/^((?P<scheme>https?):\\/)?\\/?((?P<username>.*?)(:(?P<password>.*?)|)@)?(?P<uri>.*)/";
+        $regex = '/^((?P<scheme>https?):\\/)?\\/?((?P<username>.*?)(:(?P<password>.*?)|)@)?(?P<uri>.*)/';
         preg_match($regex, $this->getPath(), $matches);
 
         //username provided ?

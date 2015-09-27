@@ -19,12 +19,12 @@ class SourceCloneTest extends PHPUnit_Framework_TestCase
 
     protected function baseConfiguration()
     {
-        return array('strategy' => 'clone', 'path' => 'https://github.com/onigoetz/deployer');
+        return ['strategy' => 'clone', 'path' => 'https://github.com/onigoetz/deployer'];
     }
 
     public function testIsValid()
     {
-        $data = array('strategy' => 'clone', 'path' => '/the/path');
+        $data = ['strategy' => 'clone', 'path' => '/the/path'];
 
         $source = Source::make('noname', $data, $this->getManager());
 
@@ -33,7 +33,7 @@ class SourceCloneTest extends PHPUnit_Framework_TestCase
 
     public function testGetBranch()
     {
-        $data = array('strategy' => 'clone', 'path' => '/the/path', 'branch' => 'develop');
+        $data = ['strategy' => 'clone', 'path' => '/the/path', 'branch' => 'develop'];
 
         $source = Source::make('noname', $data, $this->getManager());
 
@@ -44,10 +44,10 @@ class SourceCloneTest extends PHPUnit_Framework_TestCase
     {
         $mgr = $this->getManager();
 
-        $master_data = array('strategy' => 'clone', 'path' => '/main/path', 'branch' => 'develop');
+        $master_data = ['strategy' => 'clone', 'path' => '/main/path', 'branch' => 'develop'];
         $mgr->set(Source::make('master', $master_data, $mgr));
 
-        $data = array('strategy' => 'clone', 'extends' => 'master');
+        $data = ['strategy' => 'clone', 'extends' => 'master'];
         $mgr->set($source = Source::make('apprentice', $data, $mgr));
 
         $this->assertEquals($master_data['branch'], $source->getBranch());
@@ -57,10 +57,10 @@ class SourceCloneTest extends PHPUnit_Framework_TestCase
     {
         $mgr = $this->getManager();
 
-        $master_data = array('strategy' => 'clone', 'path' => '/main/path', 'branch' => 'master');
+        $master_data = ['strategy' => 'clone', 'path' => '/main/path', 'branch' => 'master'];
         $mgr->set(Source::make('master', $master_data, $mgr));
 
-        $data = array('branch' => 'develop', 'extends' => 'master');
+        $data = ['branch' => 'develop', 'extends' => 'master'];
         $mgr->set($source = Source::make('apprentice', $data, $mgr));
 
         $this->assertInstanceOf('\Onigoetz\Deployer\Configuration\Sources\Cloned', $source);
@@ -72,10 +72,10 @@ class SourceCloneTest extends PHPUnit_Framework_TestCase
 
         // The point in this test is that the child is
         // declared before the configuration it extends
-        $data = array('strategy' => 'clone', 'extends' => 'master');
+        $data = ['strategy' => 'clone', 'extends' => 'master'];
         $mgr->set($source = Source::make('apprentice', $data, $mgr));
 
-        $master_data = array('strategy' => 'clone', 'path' => '/main/path', 'branch' => 'develop');
+        $master_data = ['strategy' => 'clone', 'path' => '/main/path', 'branch' => 'develop'];
         $mgr->set(Source::make('master', $master_data, $mgr));
 
         $this->assertEquals($master_data['branch'], $source->getBranch());
@@ -83,7 +83,7 @@ class SourceCloneTest extends PHPUnit_Framework_TestCase
 
     public function testGetDefaultBranch()
     {
-        $data = array('strategy' => 'clone', 'path' => '/the/path');
+        $data = ['strategy' => 'clone', 'path' => '/the/path'];
 
         $source = Source::make('noname', $data, $this->getManager());
 
@@ -94,19 +94,18 @@ class SourceCloneTest extends PHPUnit_Framework_TestCase
     {
         $mgr = $this->getManager();
 
-        $master_data = array('strategy' => 'clone', 'path' => '/main/path');
+        $master_data = ['strategy' => 'clone', 'path' => '/main/path'];
         $mgr->set(Source::make('master', $master_data, $mgr));
 
-        $data = array('strategy' => 'clone', 'extends' => 'master');
+        $data = ['strategy' => 'clone', 'extends' => 'master'];
         $mgr->set($source = Source::make('apprentice', $data, $mgr));
 
         $this->assertEquals(Cloned::$defaultBranch, $source->getBranch());
     }
 
-
     public function testGetType()
     {
-        $data = array('strategy' => 'clone', 'path' => '/the/path', 'type' => 'mercurial');
+        $data = ['strategy' => 'clone', 'path' => '/the/path', 'type' => 'mercurial'];
 
         $source = Source::make('noname', $data, $this->getManager());
 
@@ -115,7 +114,7 @@ class SourceCloneTest extends PHPUnit_Framework_TestCase
 
     public function testGetDefaultType()
     {
-        $data = array('strategy' => 'clone', 'path' => '/the/path');
+        $data = ['strategy' => 'clone', 'path' => '/the/path'];
 
         $source = Source::make('noname', $data, $this->getManager());
 
@@ -124,7 +123,7 @@ class SourceCloneTest extends PHPUnit_Framework_TestCase
 
     public function testGetSubmodules()
     {
-        $data = array('strategy' => 'clone', 'path' => '/the/path', 'submodules' => true);
+        $data = ['strategy' => 'clone', 'path' => '/the/path', 'submodules' => true];
 
         $source = Source::make('noname', $data, $this->getManager());
 
@@ -133,7 +132,7 @@ class SourceCloneTest extends PHPUnit_Framework_TestCase
 
     public function testGetDefaultSubmodules()
     {
-        $data = array('strategy' => 'clone', 'path' => '/the/path');
+        $data = ['strategy' => 'clone', 'path' => '/the/path'];
 
         $source = Source::make('noname', $data, $this->getManager());
 
@@ -142,7 +141,7 @@ class SourceCloneTest extends PHPUnit_Framework_TestCase
 
     public function testGetUsername()
     {
-        $data = array('strategy' => 'clone', 'path' => '/the/path', 'username' => 'root');
+        $data = ['strategy' => 'clone', 'path' => '/the/path', 'username' => 'root'];
 
         $source = Source::make('noname', $data, $this->getManager());
 
@@ -151,7 +150,7 @@ class SourceCloneTest extends PHPUnit_Framework_TestCase
 
     public function testGetDefaultUsername()
     {
-        $data = array('strategy' => 'clone', 'path' => '/the/path');
+        $data = ['strategy' => 'clone', 'path' => '/the/path'];
 
         $source = Source::make('noname', $data, $this->getManager());
 
@@ -160,7 +159,7 @@ class SourceCloneTest extends PHPUnit_Framework_TestCase
 
     public function testGetPassword()
     {
-        $data = array('strategy' => 'clone', 'path' => '/the/path', 'password' => 'pass');
+        $data = ['strategy' => 'clone', 'path' => '/the/path', 'password' => 'pass'];
 
         $source = Source::make('noname', $data, $this->getManager());
 
@@ -169,7 +168,7 @@ class SourceCloneTest extends PHPUnit_Framework_TestCase
 
     public function testGetDefaultPassword()
     {
-        $data = array('strategy' => 'clone', 'path' => '/the/path');
+        $data = ['strategy' => 'clone', 'path' => '/the/path'];
 
         $source = Source::make('noname', $data, $this->getManager());
 
@@ -287,7 +286,7 @@ class SourceCloneTest extends PHPUnit_Framework_TestCase
     {
         $manager = $this->getManager();
 
-        $data = array('strategy' => 'clone', 'path' => '/the/path');
+        $data = ['strategy' => 'clone', 'path' => '/the/path'];
 
         $parent = Source::make('parent', $data, $manager);
         $manager->set($parent);

@@ -14,7 +14,7 @@ class SourceTest extends PHPUnit_Framework_TestCase
      */
     public function testNoStrategy()
     {
-        Source::make('noname', array(), $this->getManager());
+        Source::make('noname', [], $this->getManager());
     }
 
     /**
@@ -22,26 +22,26 @@ class SourceTest extends PHPUnit_Framework_TestCase
      */
     public function testUnkownStrategy()
     {
-        Source::make('noname', array('strategy' => 'carrier_pigeon'), $this->getManager());
+        Source::make('noname', ['strategy' => 'carrier_pigeon'], $this->getManager());
     }
 
     public function testCloneStrategy()
     {
-        $source = Source::make('noname', array('strategy' => 'clone'), $this->getManager());
+        $source = Source::make('noname', ['strategy' => 'clone'], $this->getManager());
 
         $this->assertInstanceOf('Onigoetz\Deployer\Configuration\Sources\Cloned', $source);
     }
 
     public function testUploadStrategy()
     {
-        $source = Source::make('noname', array('strategy' => 'upload'), $this->getManager());
+        $source = Source::make('noname', ['strategy' => 'upload'], $this->getManager());
 
         $this->assertInstanceOf('Onigoetz\Deployer\Configuration\Sources\Upload', $source);
     }
 
     public function testGetPath()
     {
-        $data = array('strategy' => 'upload', 'path' => '/the/path');
+        $data = ['strategy' => 'upload', 'path' => '/the/path'];
 
         $source = Source::make('noname', $data, $this->getManager());
 
@@ -52,10 +52,10 @@ class SourceTest extends PHPUnit_Framework_TestCase
     {
         $mgr = $this->getManager();
 
-        $master_data = array('strategy' => 'upload', 'path' => '/main/path');
+        $master_data = ['strategy' => 'upload', 'path' => '/main/path'];
         $mgr->set(Source::make('master', $master_data, $mgr));
 
-        $data = array('strategy' => 'upload', 'extends' => 'master');
+        $data = ['strategy' => 'upload', 'extends' => 'master'];
         $mgr->set($source = Source::make('apprentice', $data, $mgr));
 
         $this->assertEquals($master_data['path'], $source->getPath());
@@ -66,7 +66,7 @@ class SourceTest extends PHPUnit_Framework_TestCase
      */
     public function testNoPath()
     {
-        $data = array('strategy' => 'upload');
+        $data = ['strategy' => 'upload'];
 
         $source = Source::make('noname', $data, $this->getManager());
 
@@ -75,7 +75,7 @@ class SourceTest extends PHPUnit_Framework_TestCase
 
     public function testIsInvalid()
     {
-        $data = array('strategy' => 'upload');
+        $data = ['strategy' => 'upload'];
 
         $source = Source::make('noname', $data, $this->getManager());
 
@@ -84,7 +84,7 @@ class SourceTest extends PHPUnit_Framework_TestCase
 
     public function testIsValid()
     {
-        $data = array('strategy' => 'upload', 'path' => '/a/path');
+        $data = ['strategy' => 'upload', 'path' => '/a/path'];
 
         $source = Source::make('noname', $data, $this->getManager());
 
@@ -96,7 +96,7 @@ class SourceTest extends PHPUnit_Framework_TestCase
      */
     public function testNonExistingParent()
     {
-        $data = array('strategy' => 'upload', 'extends' => 'master', 'path' => '/main/path');
+        $data = ['strategy' => 'upload', 'extends' => 'master', 'path' => '/main/path'];
         $source = Source::make('noname', $data, $this->getManager());
 
         $source->getPath();

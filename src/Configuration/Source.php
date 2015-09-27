@@ -15,8 +15,8 @@ class Source extends ExtendableConfigurationContainer
      * @param array $data
      * @param ConfigurationManager $manager
      * @param Source $parent
-     * @return Cloned|Upload
      * @throws \LogicException
+     * @return Cloned|Upload
      */
     public static function make($name, array $data, ConfigurationManager $manager, Source $parent = null)
     {
@@ -33,7 +33,6 @@ class Source extends ExtendableConfigurationContainer
         }
 
         throw new \LogicException("Unrecognized strategy '{$strategy}'");
-
     }
 
     protected static function findStrategy($name, $data, ConfigurationManager $manager, Source $parent = null)
@@ -67,8 +66,8 @@ class Source extends ExtendableConfigurationContainer
     }
 
     /**
-     * @return mixed
      * @throws \LogicException
+     * @return mixed
      */
     public function getPath()
     {

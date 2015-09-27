@@ -45,13 +45,13 @@ class RollbackCommand extends BaseCommand
             $actions = [
                 'Removing the symlink of the release to rollback' => [
                     'action' => 'rmfile',
-                    'file' => $environment->getDirectories()->getDeploy()
+                    'file' => $environment->getDirectories()->getDeploy(),
                 ],
                 'Link it again to the snapshot ' . $previous => [
                     'action' => 'symlink',
                     'target' => $previous,
-                    'link_name' => $environment->getDirectories()->getDeploy()
-                ]
+                    'link_name' => $environment->getDirectories()->getDeploy(),
+                ],
             ];
 
             $output->writeln('Previous snapshot : ' . $previous);

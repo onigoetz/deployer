@@ -35,12 +35,12 @@ return [
         //paths to include with the build, takes everything by default
         'include' => [
             'app',
-            'public'
+            'public',
         ],
 
         //paths to exclude
         'exclude' => [
-            'app/storage'
+            'app/storage',
         ],
     ],
     'cloned_dev' => [

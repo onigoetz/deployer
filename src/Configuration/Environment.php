@@ -70,7 +70,7 @@ class Environment extends ConfigurationContainer
 
         foreach ($groups as $group) {
             /**
-             * @var $items Tasks
+             * @var Tasks
              */
             $items = $this->manager->get('tasks', $group);
             foreach ($items->getTasks() as $name => $action) {
@@ -99,7 +99,7 @@ class Environment extends ConfigurationContainer
         }
 
         /**
-         * @var $server Server
+         * @var Server
          */
         foreach ($this->getServers() as $server) {
             if (!$server->isValid()) {

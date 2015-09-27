@@ -11,7 +11,7 @@ class ServerTest extends PHPUnit_Framework_TestCase
 
     public function testGetHost()
     {
-        $data = array('host' => 'localhost');
+        $data = ['host' => 'localhost'];
 
         $server = new Server('local', $data, $this->getManager());
 
@@ -23,14 +23,14 @@ class ServerTest extends PHPUnit_Framework_TestCase
      */
     public function testNoHost()
     {
-        $server = new Server('local', array(), $this->getManager());
+        $server = new Server('local', [], $this->getManager());
 
         $server->getHost();
     }
 
     public function testGetUsername()
     {
-        $data = array('username' => 'sgoetz');
+        $data = ['username' => 'sgoetz'];
 
         $server = new Server('local', $data, $this->getManager());
 
@@ -39,7 +39,7 @@ class ServerTest extends PHPUnit_Framework_TestCase
 
     public function testGetPassword()
     {
-        $data = array('password' => 'dummyPass');
+        $data = ['password' => 'dummyPass'];
 
         $server = new Server('local', $data, $this->getManager());
 
@@ -48,14 +48,14 @@ class ServerTest extends PHPUnit_Framework_TestCase
 
     public function testNoPassword()
     {
-        $server = new Server('local', array(), $this->getManager());
+        $server = new Server('local', [], $this->getManager());
 
         $this->assertEquals(Server::$defaultPassword, $server->getPassword());
     }
 
     public function testValidData()
     {
-        $data = array('host' => 'localhost', 'username' => 'sgoetz');
+        $data = ['host' => 'localhost', 'username' => 'sgoetz'];
 
         $server = new Server('local', $data, $this->getManager());
 
@@ -64,7 +64,7 @@ class ServerTest extends PHPUnit_Framework_TestCase
 
     public function testInvalidData()
     {
-        $data = array('host' => 'localhost', 'password' => 'dummyPass');
+        $data = ['host' => 'localhost', 'password' => 'dummyPass'];
 
         $server = new Server('local', $data, $this->getManager());
 

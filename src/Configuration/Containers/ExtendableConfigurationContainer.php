@@ -21,6 +21,7 @@ abstract class ExtendableConfigurationContainer extends InheritingConfigurationC
     protected function getValueOrFail($key, $error_message)
     {
         $this->loadParent();
+
         return parent::getValueOrFail($key, $error_message);
     }
 
@@ -31,6 +32,7 @@ abstract class ExtendableConfigurationContainer extends InheritingConfigurationC
     protected function getValueOrDefault($key, $default)
     {
         $this->loadParent();
+
         return parent::getValueOrDefault($key, $default);
     }
 }
