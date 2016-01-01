@@ -44,6 +44,7 @@ class RollbackCommand extends BaseCommand
 
         if ($previous == '') {
             $output->writeln('<error>Cannot find previous file !!!</error>');
+
             return;
         }
 
