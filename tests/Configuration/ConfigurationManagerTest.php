@@ -43,7 +43,7 @@ class ConfigurationManagerTest extends PHPUnit_Framework_TestCase
             'environments' => ['prod' => ['tasks' => ['before' => ['do_before']]]],
             'tasks' => ['do_before' => [['action' => 'prune']]],
         ];
-        $data += ['directories' => ['root' => '/var/www'],'sources' => [], 'servers' => []];
+        $data += ['directories' => ['root' => '/var/www'], 'sources' => [], 'servers' => []];
 
         $manager = ConfigurationManager::create($data);
 
@@ -58,7 +58,7 @@ class ConfigurationManagerTest extends PHPUnit_Framework_TestCase
             'environments' => ['prod' => ['tasks' => ['before' => ['do_before']]]],
             'tasks' => ['do_before' => ['Do Pruning' => ['action' => 'prune']]],
         ];
-        $data += ['directories' => ['root' => '/var/www'],'sources' => [], 'servers' => []];
+        $data += ['directories' => ['root' => '/var/www'], 'sources' => [], 'servers' => []];
 
         $manager = ConfigurationManager::create($data);
 
@@ -73,7 +73,7 @@ class ConfigurationManagerTest extends PHPUnit_Framework_TestCase
             'environments' => ['prod' => ['tasks']],
             'tasks' => [],
         ];
-        $data += ['directories' => ['root' => '/var/www'],'sources' => [], 'servers' => []];
+        $data += ['directories' => ['root' => '/var/www'], 'sources' => [], 'servers' => []];
 
         $manager = ConfigurationManager::create($data);
 
@@ -91,7 +91,7 @@ class ConfigurationManagerTest extends PHPUnit_Framework_TestCase
                 'do_before2' => [['action' => 'symlink']],
             ],
         ];
-        $data += ['directories' => ['root' => '/var/www'],'sources' => [], 'servers' => []];
+        $data += ['directories' => ['root' => '/var/www'], 'sources' => [], 'servers' => []];
 
         $final = [['action' => 'prune'], ['action' => 'symlink']];
 
