@@ -85,8 +85,10 @@ class DeployCommand extends BaseCommand
             );
         }
 
+        $substitutions = $environment->getSubstitutions($destination);
+
         $output->writeln('<fg=blue;options=bold>Before deployment actions</fg=blue;options=bold>');
-        $this->runActions($runner, $environment->getTasks('before'), $output, $environment->getSubstitutions($destination));
+        $this->runActions($runner, $environment->getTasks('before'), $output, $substitutions);
 
         $output->writeln('<fg=blue;options=bold>Deployment</fg=blue;options=bold>');
         $this->runAction(
@@ -113,7 +115,7 @@ class DeployCommand extends BaseCommand
 
         $output->writeln('');
         $output->writeln('<fg=blue;options=bold>After deployment actions</fg=blue;options=bold>');
-        $this->runActions($runner, $environment->getTasks('after'), $output, $environment->getSubstitutions($destination));
+        $this->runActions($runner, $environment->getTasks('after'), $output, $substitutions);
 
         $output->writeln('Done');
     }
