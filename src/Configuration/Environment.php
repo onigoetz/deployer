@@ -25,25 +25,25 @@ class Environment extends ConfigurationContainer
     {
         $source = $this->getValueOrFail('source', 'no source specified');
 
-        $resolved_source = $this->manager->get('source', $source);
+        $resolvedSource = $this->manager->get('source', $source);
 
         if (!$this->hasOverrides('source')) {
-            return $resolved_source;
+            return $resolvedSource;
         }
 
-        return Source::make('override', $this->data['overrides']['source'], $this->manager, $resolved_source);
+        return Source::make('override', $this->data['overrides']['source'], $this->manager, $resolvedSource);
     }
 
     public function getServers()
     {
         $servers = $this->getValueOrFail('servers', 'no servers specified');
 
-        $resolved_servers = [];
+        $resolvedServers = [];
         foreach ($servers as $server) {
-            $resolved_servers[] = $this->manager->get('server', $server);
+            $resolvedServers[] = $this->manager->get('server', $server);
         }
 
-        return $resolved_servers;
+        return $resolvedServers;
     }
 
     public function getDirectories()
@@ -76,9 +76,10 @@ class Environment extends ConfigurationContainer
             foreach ($items->getTasks() as $name => $action) {
                 if (is_numeric($name)) {
                     $actions[] = $action;
-                } else {
-                    $actions[$name] = $action;
+                    continue;
                 }
+
+                $actions[$name] = $action;
             }
         }
 

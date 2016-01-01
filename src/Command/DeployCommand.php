@@ -49,15 +49,15 @@ class DeployCommand extends BaseCommand
 
     protected function deploy(OutputInterface $output, Net_SFTP $ssh, Environment $environment, $destination)
     {
-        $destination_dir = dirname($destination);
+        $destinationDir = dirname($destination);
 
         $runner = new RemoteActionRunner($output, $ssh);
 
         $this->runAction(
             'Create folders on server',
             $output,
-            function () use ($runner, $destination_dir) {
-                $runner->setupServer($destination_dir);
+            function () use ($runner, $destinationDir) {
+                $runner->setupServer($destinationDir);
             }
         );
 

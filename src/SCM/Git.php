@@ -6,26 +6,26 @@ class Git extends SCM
 {
     public function getCommand(\Net_SFTP $ssh)
     {
-        $git_command = str_replace("\n", '', $ssh->exec('which git'));
-        if ($git_command == '') {
+        $gitCommand = str_replace("\n", '', $ssh->exec('which git'));
+        if ($gitCommand == '') {
             throw new \Exception('the git command wasn\'t found on this server');
         }
 
-        return $git_command;
+        return $gitCommand;
     }
 
     public function cloneCommand($command, $repository, $binary)
     {
-        $clone_command = $command . ' clone ';
+        $cloneCommand = $command . ' clone ';
 
         if ($this->environment->getSource()->getSubmodules()) {
-            $clone_command .= ' --recursive';
+            $cloneCommand .= ' --recursive';
         }
 
-        $clone_command .= ' -b ' . $this->environment->getSource()->getBranch();
-        $clone_command .= ' "' . $repository . '"';
-        $clone_command .= ' "' . $binary . '"';
+        $cloneCommand .= ' -b ' . $this->environment->getSource()->getBranch();
+        $cloneCommand .= ' "' . $repository . '"';
+        $cloneCommand .= ' "' . $binary . '"';
 
-        return $clone_command;
+        return $cloneCommand;
     }
 }

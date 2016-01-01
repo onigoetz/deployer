@@ -23,21 +23,21 @@ abstract class InheritingConfigurationContainer extends ConfigurationContainer
      * Will check the parent before the exception is thrown
      *
      * @param $key
-     * @param $error_message
+     * @param $errorMessage
      * @throws \LogicException
      * @return mixed
      */
-    protected function getValueOrFail($key, $error_message)
+    protected function getValueOrFail($key, $errorMessage)
     {
         if (array_key_exists($key, $this->data)) {
             return $this->data[$key];
         }
 
         if ($this->parent) {
-            return $this->parent->getValueOrFail($key, $error_message);
+            return $this->parent->getValueOrFail($key, $errorMessage);
         }
 
-        throw new \LogicException($error_message);
+        throw new \LogicException($errorMessage);
     }
 
     /**

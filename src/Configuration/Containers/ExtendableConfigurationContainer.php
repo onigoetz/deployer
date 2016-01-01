@@ -18,11 +18,11 @@ abstract class ExtendableConfigurationContainer extends InheritingConfigurationC
      * {@inheritdoc}
      * @param string $key
      */
-    protected function getValueOrFail($key, $error_message)
+    protected function getValueOrFail($key, $errorMessage)
     {
         $this->loadParent();
 
-        return parent::getValueOrFail($key, $error_message);
+        return parent::getValueOrFail($key, $errorMessage);
     }
 
     /**

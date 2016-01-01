@@ -47,17 +47,17 @@ abstract class ConfigurationContainer
      * Get the value or throw an exception
      *
      * @param string $key
-     * @param $error_message
+     * @param $errorMessage
      * @throws \LogicException
      * @return mixed
      */
-    protected function getValueOrFail($key, $error_message)
+    protected function getValueOrFail($key, $errorMessage)
     {
         if (array_key_exists($key, $this->data)) {
             return $this->data[$key];
         }
 
-        throw new \LogicException($error_message);
+        throw new \LogicException($errorMessage);
     }
 
     /**

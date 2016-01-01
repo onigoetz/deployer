@@ -42,9 +42,9 @@ class RemoteActionRunner
         return $result;
     }
 
-    public function symlink($target, $link_name)
+    public function symlink($target, $linkName)
     {
-        return $this->exec('ln -s ' . $target . ' ' . $link_name);
+        return $this->exec('ln -s ' . $target . ' ' . $linkName);
     }
 
     public function rmfile($file)
@@ -60,9 +60,9 @@ class RemoteActionRunner
     protected function getComposerCommand($dir)
     {
         //is composer installed on the system ?
-        $composer_command = str_replace("\n", '', $this->ssh->exec('which composer'));
-        if ($composer_command != '') {
-            return $composer_command;
+        $composerCommand = str_replace("\n", '', $this->ssh->exec('which composer'));
+        if ($composerCommand != '') {
+            return $composerCommand;
         }
 
         //is composer installed locally ?
@@ -80,9 +80,9 @@ class RemoteActionRunner
 
     public function composer($dir)
     {
-        $composer_command = $this->getComposerCommand($dir);
+        $composerCommand = $this->getComposerCommand($dir);
 
-        $command = "$composer_command install --prefer-dist --optimize-autoloader --no-dev --no-interaction -d $dir";
+        $command = "$composerCommand install --prefer-dist --optimize-autoloader --no-dev --no-interaction -d $dir";
 
         return $this->exec($command . ((VERBOSE) ? ' -v' : ''));
     }
@@ -115,13 +115,13 @@ class RemoteActionRunner
         return trim(substr($link, strpos($link, '->') + 3));
     }
 
-    public function setupServer($destination_dir)
+    public function setupServer($destinationDir)
     {
-        if (!$this->isDir($destination_dir)) {
-            $this->exec('mkdir -p "' . $destination_dir . '"');
+        if (!$this->isDir($destinationDir)) {
+            $this->exec('mkdir -p "' . $destinationDir . '"');
 
-            if (!$this->isDir($destination_dir)) {
-                throw new \Exception("Cannot create directory '$destination_dir'");
+            if (!$this->isDir($destinationDir)) {
+                throw new \Exception("Cannot create directory '$destinationDir'");
             }
         }
     }
