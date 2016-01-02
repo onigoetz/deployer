@@ -3,6 +3,7 @@
     "description": "A configurable deploy script",
     "homepage": "https://github.com/onigoetz/deployer",
     "keywords": ["deployment", "laravel", "l4", "capistrano"],
+    "licence": "MIT",
     "authors": [
         {
             "name": "Stephane Goetz",
