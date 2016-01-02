@@ -3,8 +3,10 @@
 namespace Onigoetz\Deployer\Configuration\Sources;
 
 use Onigoetz\Deployer\Configuration\Source;
-use Symfony\Component\Console\Helper\DialogHelper;
+use Symfony\Component\Console\Helper\QuestionHelper;
+use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Question\Question;
 
 //the name of the class is "cloned" as "clone" is a reserved keyword
 class Cloned extends Source
@@ -48,7 +50,7 @@ class Cloned extends Source
         $this->data['password'] = $password;
     }
 
-    public function getFinalUrl(DialogHelper $dialog, OutputInterface $output)
+    public function getFinalUrl(QuestionHelper $questionHelper, InputInterface $input, OutputInterface $output)
     {
         $regex = '/^((?P<scheme>https?):\\/)?\\/?((?P<username>.*?)(:(?P<password>.*?)|)@)?(?P<uri>.*)/';
         preg_match($regex, $this->getPath(), $matches);
@@ -57,7 +59,8 @@ class Cloned extends Source
         if ($matches['username']) {
             $username = $matches['username'];
         } elseif (!$username = $this->getUsername()) {
-            $username = $dialog->ask($output, 'Your repository username: ');
+            $question = new Question('What is the repository username?');
+            $username = $questionHelper->ask($input, $output, $question);
             $this->setUsername($username);
         }
 
@@ -65,7 +68,9 @@ class Cloned extends Source
         if ($matches['password']) {
             $password = $matches['password'];
         } elseif (!$password = $this->getPassword()) {
-            $password = $dialog->askHiddenResponse($output, 'Your repository password: ', false);
+            $question = new Question('What is the repository password?', false);
+            $question->setHidden(true)->setHiddenFallback(false);
+            $password = $questionHelper->ask($input, $output, $question);
             $this->setPassword($password);
         }
 

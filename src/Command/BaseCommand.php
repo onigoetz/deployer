@@ -8,7 +8,9 @@ use Onigoetz\Deployer\Configuration\Environment;
 use Onigoetz\Deployer\MethodCaller;
 use Onigoetz\Deployer\RemoteActionRunner;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Question\Question;
 
 class BaseCommand extends Command
 {
@@ -78,8 +80,12 @@ class BaseCommand extends Command
         }
     }
 
-    protected function allServers(Environment $environment, OutputInterface $output, \Closure $action)
-    {
+    protected function allServers(
+        Environment $environment,
+        InputInterface $input,
+        OutputInterface $output,
+        \Closure $action
+    ) {
         //Loop on the servers
         /**
          * @var \Onigoetz\Deployer\Configuration\Server
@@ -91,7 +97,9 @@ class BaseCommand extends Command
             //Ask server password if needed ?
             if (!$password = $server->getPassword()) {
                 $text = "Password for <info>{$server->getUsername()}@{$server->getHost()}</info>:";
-                $password = $this->getHelper('dialog')->askHiddenResponse($output, $text, false);
+                $question = new Question($text, false);
+                $question->setHidden(true)->setHiddenFallback(false);
+                $password = $this->getHelper('question')->ask($input, $output, $question);
             }
 
             //Login to server

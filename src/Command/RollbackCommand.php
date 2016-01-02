@@ -29,6 +29,7 @@ class RollbackCommand extends BaseCommand
 
         $this->allServers(
             $environment,
+            $input,
             $output,
             function ($ssh) use ($environment, $output) {
                 $this->rollback($output, $ssh, $environment);

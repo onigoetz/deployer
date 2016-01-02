@@ -40,15 +40,21 @@ class DeployCommand extends BaseCommand
 
         $this->allServers(
             $environment,
+            $input,
             $output,
-            function ($ssh) use ($environment, $output, $dest) {
-                $this->deploy($output, $ssh, $environment, $dest);
+            function ($ssh) use ($environment, $input, $output, $dest) {
+                $this->deploy($input, $output, $ssh, $environment, $dest);
             }
         );
     }
 
-    protected function deploy(OutputInterface $output, Net_SFTP $ssh, Environment $environment, $destination)
-    {
+    protected function deploy(
+        InputInterface $input,
+        OutputInterface $output,
+        Net_SFTP $ssh,
+        Environment $environment,
+        $destination
+    ) {
         $destinationDir = dirname($destination);
 
         $runner = new RemoteActionRunner($output, $ssh);
@@ -72,7 +78,7 @@ class DeployCommand extends BaseCommand
              */
             $scm = new $class($environment);
 
-            $final = $environment->getSource()->getFinalUrl($this->getHelper('dialog'), $output);
+            $final = $environment->getSource()->getFinalUrl($this->getHelper('question'), $input, $output);
 
             $this->runAction(
                 'Clone the latest version',

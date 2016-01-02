@@ -177,8 +177,9 @@ class SourceCloneTest extends PHPUnit_Framework_TestCase
 
     public function testGetFinalUrl()
     {
-        $output = m::mock('Symfony\Component\Console\Output\OutputInterface');
-        $dialog = m::mock('Symfony\Component\Console\Helper\DialogHelper');
+        $input = m::mock(\Symfony\Component\Console\Input\InputInterface::class);
+        $output = m::mock(\Symfony\Component\Console\Output\OutputInterface::class);
+        $question = m::mock(\Symfony\Component\Console\Helper\QuestionHelper::class);
 
         $data = $this->baseConfiguration()  + ['password' => 'pass', 'username' => 'user'];
 
@@ -186,7 +187,7 @@ class SourceCloneTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals(
             "https://{$data['username']}:{$data['password']}@github.com/onigoetz/deployer",
-            $source->getFinalUrl($dialog, $output)
+            $source->getFinalUrl($question, $input, $output)
         );
     }
 
@@ -194,9 +195,10 @@ class SourceCloneTest extends PHPUnit_Framework_TestCase
     {
         $password = 'hey';
 
-        $output = m::mock('Symfony\Component\Console\Output\OutputInterface');
-        $dialog = m::mock('Symfony\Component\Console\Helper\DialogHelper');
-        $dialog->shouldReceive('askHiddenResponse')->once()->andReturn($password);
+        $input = m::mock(\Symfony\Component\Console\Input\InputInterface::class);
+        $output = m::mock(\Symfony\Component\Console\Output\OutputInterface::class);
+        $question = m::mock(\Symfony\Component\Console\Helper\QuestionHelper::class);
+        $question->shouldReceive('ask')->once()->andReturn($password);
 
         $data = $this->baseConfiguration()  + ['username' => 'user'];
 
@@ -204,7 +206,7 @@ class SourceCloneTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals(
             "https://{$data['username']}:{$password}@github.com/onigoetz/deployer",
-            $source->getFinalUrl($dialog, $output)
+            $source->getFinalUrl($question, $input, $output)
         );
     }
 
@@ -212,9 +214,10 @@ class SourceCloneTest extends PHPUnit_Framework_TestCase
     {
         $username = 'hey';
 
-        $output = m::mock('Symfony\Component\Console\Output\OutputInterface');
-        $dialog = m::mock('Symfony\Component\Console\Helper\DialogHelper');
-        $dialog->shouldReceive('ask')->once()->andReturn($username);
+        $input = m::mock(\Symfony\Component\Console\Input\InputInterface::class);
+        $output = m::mock(\Symfony\Component\Console\Output\OutputInterface::class);
+        $question = m::mock(\Symfony\Component\Console\Helper\QuestionHelper::class);
+        $question->shouldReceive('ask')->once()->andReturn($username);
 
         $data = $this->baseConfiguration()  + ['password' => 'pass'];
 
@@ -222,7 +225,7 @@ class SourceCloneTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals(
             "https://{$username}:{$data['password']}@github.com/onigoetz/deployer",
-            $source->getFinalUrl($dialog, $output)
+            $source->getFinalUrl($question, $input, $output)
         );
     }
 
@@ -230,25 +233,26 @@ class SourceCloneTest extends PHPUnit_Framework_TestCase
     {
         $final_path = 'https://user:pass@github.com/onigoetz/deployer';
 
-        $output = m::mock('Symfony\Component\Console\Output\OutputInterface');
-        $dialog = m::mock('Symfony\Component\Console\Helper\DialogHelper');
-        $dialog->shouldReceive('ask')->never();
-        $dialog->shouldReceive('askHiddenResponse')->never();
+        $input = m::mock(\Symfony\Component\Console\Input\InputInterface::class);
+        $output = m::mock(\Symfony\Component\Console\Output\OutputInterface::class);
+        $question = m::mock(\Symfony\Component\Console\Helper\QuestionHelper::class);
+        $question->shouldReceive('ask')->never();
 
         $data = ['strategy' => 'clone', 'path' => $final_path];
 
         $source = Source::make('noname', $data, $this->getManager());
 
-        $this->assertEquals($final_path, $source->getFinalUrl($dialog, $output));
+        $this->assertEquals($final_path, $source->getFinalUrl($question, $input, $output));
     }
 
     public function testGetFinalUrlWithoutPasswordOnlyAskOnce()
     {
         $password = 'hey';
 
-        $output = m::mock('Symfony\Component\Console\Output\OutputInterface');
-        $dialog = m::mock('Symfony\Component\Console\Helper\DialogHelper');
-        $dialog->shouldReceive('askHiddenResponse')->once()->andReturn($password);
+        $input = m::mock(\Symfony\Component\Console\Input\InputInterface::class);
+        $output = m::mock(\Symfony\Component\Console\Output\OutputInterface::class);
+        $question = m::mock(\Symfony\Component\Console\Helper\QuestionHelper::class);
+        $question->shouldReceive('ask')->once()->andReturn($password);
 
         $data = $this->baseConfiguration()  + ['username' => 'user'];
 
@@ -256,12 +260,12 @@ class SourceCloneTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals(
             "https://{$data['username']}:{$password}@github.com/onigoetz/deployer",
-            $source->getFinalUrl($dialog, $output)
+            $source->getFinalUrl($question, $input, $output)
         );
 
         $this->assertEquals(
             "https://{$data['username']}:{$password}@github.com/onigoetz/deployer",
-            $source->getFinalUrl($dialog, $output)
+            $source->getFinalUrl($question, $input, $output)
         );
     }
 
@@ -271,15 +275,16 @@ class SourceCloneTest extends PHPUnit_Framework_TestCase
         $password = 'hey';
         $final_path = "https://user:{$password}@github.com/onigoetz/deployer";
 
-        $output = m::mock('Symfony\Component\Console\Output\OutputInterface');
-        $dialog = m::mock('Symfony\Component\Console\Helper\DialogHelper');
-        $dialog->shouldReceive('askHiddenResponse')->once()->andReturn($password);
+        $input = m::mock(\Symfony\Component\Console\Input\InputInterface::class);
+        $output = m::mock(\Symfony\Component\Console\Output\OutputInterface::class);
+        $question = m::mock(\Symfony\Component\Console\Helper\QuestionHelper::class);
+        $question->shouldReceive('ask')->once()->andReturn($password);
 
         $data = ['strategy' => 'clone', 'path' => $start_path];
 
         $source = Source::make('noname', $data, $this->getManager());
 
-        $this->assertEquals($final_path, $source->getFinalUrl($dialog, $output));
+        $this->assertEquals($final_path, $source->getFinalUrl($question, $input, $output));
     }
 
     public function testGetStrategyFromParent()
