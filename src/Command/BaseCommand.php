@@ -36,6 +36,11 @@ class BaseCommand extends Command
         return strtr($dir, $directories);
     }
 
+    protected function parameterToCamelCase($key)
+    {
+        return lcfirst(str_replace(' ', '', ucwords(str_replace('_', ' ', $key))));
+    }
+
     protected function runActions(RemoteActionRunner $runner, $actions, OutputInterface $output, $directories)
     {
         foreach ($actions as $description => $action) {
@@ -48,6 +53,7 @@ class BaseCommand extends Command
 
                     $parameters = [];
                     foreach ($action as $key => $value) {
+                        $key = $this->parameterToCamelCase($key);
                         $parameters[$key] = $this->replaceVars($value, $directories);
 
                         if ($method != 'exec') {
