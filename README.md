@@ -6,6 +6,11 @@
 [![Scrutinizer Quality Score](http://img.shields.io/scrutinizer/g/onigoetz/deployer.svg?style=flat)](https://scrutinizer-ci.com/g/onigoetz/deployer/)
 [![Code Coverage](http://img.shields.io/scrutinizer/coverage/g/onigoetz/deployer.svg?style=flat)](https://scrutinizer-ci.com/g/onigoetz/deployer/)
 
+### Deprecated
+
+This package is deprecated, and won't receive any update.
+There are most certainly better tools to do this.
+
 ### Easily deploy your applications
 
 
